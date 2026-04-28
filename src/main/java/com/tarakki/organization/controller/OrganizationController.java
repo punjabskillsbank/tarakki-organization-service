@@ -1,7 +1,8 @@
-package com.tarakki.organization.contoller;
+package com.tarakki.organization.controller;
 
 import com.tarakki.organization.dto.OrganizationDTO;
 import com.tarakki.organization.service.OrganizationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,10 +20,8 @@ public class OrganizationController {
     private OrganizationService organizationService;
 
     @PostMapping("/create_organization")
-    public ResponseEntity<OrganizationDTO> createOrganization(@RequestBody OrganizationDTO organizationRequest) {
+    public ResponseEntity<OrganizationDTO> createOrganization(@Valid @RequestBody OrganizationDTO organizationRequest) {
         OrganizationDTO savedOrganization = organizationService.createOrganization(organizationRequest);
         return new ResponseEntity<>(savedOrganization, HttpStatus.CREATED);
     }
-
-
 }
