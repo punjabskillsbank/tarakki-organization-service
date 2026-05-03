@@ -1,7 +1,7 @@
 package com.tarakki.organization.serviceimpl;
 
 import com.tarakki.organization.dto.OrganizationDTO;
-import com.tarakki.organization.entity.Organization;
+import com.tarakki.common.entity.Organization;
 import com.tarakki.organization.repository.OrganizationRepository;
 import com.tarakki.organization.test_utils.factory.OrganizationTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;

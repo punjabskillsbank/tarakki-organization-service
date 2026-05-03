@@ -1,7 +1,7 @@
 package com.tarakki.organization.serviceimpl;
 
 import com.tarakki.organization.dto.OrganizationDTO;
-import com.tarakki.organization.entity.Organization;
+import com.tarakki.common.entity.Organization;
 import com.tarakki.organization.repository.OrganizationRepository;
 import com.tarakki.organization.service.OrganizationService;
 import jakarta.transaction.Transactional;
@@ -19,7 +19,6 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     public OrganizationDTO createOrganization(OrganizationDTO organizationRequest) {
         Organization organization = mapper.map(organizationRequest, Organization.class);
-        organization.setOrgId(null);
         Organization savedOrganization = organizationRepository.save(organization);
         return mapper.map(savedOrganization, OrganizationDTO.class);
     }

@@ -1,7 +1,7 @@
 package com.tarakki.organization.test_utils.factory;
 
 import com.tarakki.organization.dto.OrganizationDTO;
-import com.tarakki.organization.entity.Organization;
+import com.tarakki.common.entity.Organization;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

@@ -19,7 +19,7 @@ public class OrganizationController {
     @Autowired
     private OrganizationService organizationService;
 
-    @PostMapping("/create_organization")
+    @PostMapping
     public ResponseEntity<OrganizationDTO> createOrganization(@Valid @RequestBody OrganizationDTO organizationRequest) {
         OrganizationDTO savedOrganization = organizationService.createOrganization(organizationRequest);
         return new ResponseEntity<>(savedOrganization, HttpStatus.CREATED);

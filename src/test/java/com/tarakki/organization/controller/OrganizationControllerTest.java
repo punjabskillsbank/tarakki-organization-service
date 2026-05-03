@@ -48,7 +48,7 @@ public class OrganizationControllerTest {
         when(organizationService.createOrganization(any()))
                 .thenReturn(output);
 
-        mockMvc.perform(post("/api/organizations/create_organization")
+        mockMvc.perform(post("/api/organizations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isCreated())
@@ -67,7 +67,7 @@ public class OrganizationControllerTest {
 
         input.setOrgName(null);
 
-        mockMvc.perform(post("/api/organizations/create_organization")
+        mockMvc.perform(post("/api/organizations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest());
@@ -78,7 +78,7 @@ public class OrganizationControllerTest {
 
         input.setOwnerId(null);
 
-        mockMvc.perform(post("/api/organizations/create_organization")
+        mockMvc.perform(post("/api/organizations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest());
@@ -89,7 +89,7 @@ public class OrganizationControllerTest {
 
         input.setOrgDesc(null);
 
-        mockMvc.perform(post("/api/organizations/create_organization")
+        mockMvc.perform(post("/api/organizations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest());
@@ -100,7 +100,7 @@ public class OrganizationControllerTest {
 
         input.setOrgAddress(null);
 
-        mockMvc.perform(post("/api/organizations/create_organization")
+        mockMvc.perform(post("/api/organizations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest());
@@ -111,7 +111,7 @@ public class OrganizationControllerTest {
 
         input.setOrgCity(null);
 
-        mockMvc.perform(post("/api/organizations/create_organization")
+        mockMvc.perform(post("/api/organizations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest());
@@ -122,7 +122,7 @@ public class OrganizationControllerTest {
 
         input.setOrgState(null);
 
-        mockMvc.perform(post("/api/organizations/create_organization")
+        mockMvc.perform(post("/api/organizations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest());
@@ -133,7 +133,7 @@ public class OrganizationControllerTest {
 
         input.setOrgPostalCode(null);
 
-        mockMvc.perform(post("/api/organizations/create_organization")
+        mockMvc.perform(post("/api/organizations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest());
@@ -144,7 +144,7 @@ public class OrganizationControllerTest {
 
         input.setOrgCountry(null);
 
-        mockMvc.perform(post("/api/organizations/create_organization")
+        mockMvc.perform(post("/api/organizations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest());
