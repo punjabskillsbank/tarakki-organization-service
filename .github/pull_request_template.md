@@ -1,61 +1,23 @@
-# [Jira@TK_<Enter Ticket ID>](<Enter Ticket URL>)
+## Summary
+<Briefly describe the changes made in this PR.>
 
 ---
 
-## PR Type
+## JIRA Ticket
 
-- [ ] Feature
+<!-- Please add the ticket link. Example: TK-123 -->
+
+---
+
+## Type of Change
+- [ ] New Feature
 - [ ] Bug Fix
+- [ ] Refactor
+- [ ] More Unit Tests
+- [ ] Documentation
 
 ---
 
-## Description
-
-<!-- Explain the migration purpose -->
-
----
-
-##  API Details
-
-### API Endpoint
-
-| Method | Endpoint |
-|--------|----------|
-| GET | /api/example |
-
----
-
-### Request Body
-
-```json
-{
-  "example": "value"
-}
-```
-
----
-
-### Response Body
-
-```json
-{
-  "success": true,
-  "message": "Sample response"
-}
-```
-
----
-
-### Exceptions
-
-| Status Code | Exception Name | Reason |
-|-------------|----------------|--------|
-| 400 |                | Invalid Request |
-| 401 |                | Unauthorized |
-| 404 |                | Resource Not Found |
-
----
-
-## Additional Notes
-
-<!-- Any extra implementation details -->
+## Testing
+- [ ] Unit Tested
+- [ ] Postman Tested
