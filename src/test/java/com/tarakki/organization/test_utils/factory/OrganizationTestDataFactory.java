@@ -20,7 +20,7 @@ public class OrganizationTestDataFactory {
                 .build();
     }
 
-    public static Organization createMemberEntity(Long orgId, UUID ownerId) {
+    public static Organization createOrganizationEntity(Long orgId, UUID ownerId) {
         Organization organization = new Organization();
         organization.setOrgId(orgId);
         organization.setOrgName("ngo");

@@ -9,8 +9,6 @@ import java.util.UUID;
 
 @EqualsAndHashCode
 @Builder(toBuilder = true)
-@Getter
-@Setter
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
