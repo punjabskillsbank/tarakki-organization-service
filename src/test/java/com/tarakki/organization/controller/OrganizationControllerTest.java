@@ -1,6 +1,7 @@
 package com.tarakki.organization.controller;
 
 import com.tarakki.organization.dto.OrganizationDTO;
+import com.tarakki.organization.exceptionhandling.OwnerIdNotFoundException;
 import com.tarakki.organization.service.OrganizationService;
 import com.tarakki.organization.test_utils.factory.OrganizationTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.UUID;
@@ -60,6 +62,19 @@ public class OrganizationControllerTest {
                 .andExpect(jsonPath("$.orgPostalCode").value(output.getOrgPostalCode()))
                 .andExpect(jsonPath("$.orgCountry").value(output.getOrgCountry()));
 
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenOwnerIdIsNotFound() throws Exception {
+        when(organizationService.createOrganization(any()))
+                .thenThrow(new OwnerIdNotFoundException(input.getOwnerId()));
+
+        mockMvc.perform(post("/api/organizations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().string(
+                        "owner not found at given ownerId: " + input.getOwnerId()));
     }
 
     @Test
