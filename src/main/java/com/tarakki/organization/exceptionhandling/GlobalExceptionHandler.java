@@ -23,6 +23,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(OwnerIdNotFoundException.class)
     public ResponseEntity<String> handleOwnerIdNotFound(OwnerIdNotFoundException exception) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
     }
 }
