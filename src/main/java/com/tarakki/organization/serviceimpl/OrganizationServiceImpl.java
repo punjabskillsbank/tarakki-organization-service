@@ -11,6 +11,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,5 +30,12 @@ public class OrganizationServiceImpl implements OrganizationService {
         Organization organization = mapper.map(organizationRequest, Organization.class);
         Organization savedOrganization = organizationRepository.save(organization);
         return mapper.map(savedOrganization, OrganizationDTO.class);
+    }
+
+    @Override
+    public List<OrganizationDTO> getAllOrganizations() {
+        return organizationRepository.findAll().stream()
+                .map(organization -> mapper.map(organization, OrganizationDTO.class))
+                .toList();
     }
 }

@@ -18,9 +18,11 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.util.List;
 
 @WebMvcTest(OrganizationController.class)
 public class OrganizationControllerTest {
@@ -165,4 +167,19 @@ public class OrganizationControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void shouldGetAllOrganizations() throws Exception {
+        when(organizationService.getAllOrganizations()).thenReturn(List.of(output));
+
+        mockMvc.perform(get("/api/organizations")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].orgName").value(output.getOrgName()))
+                .andExpect(jsonPath("$[0].orgDesc").value(output.getOrgDesc()))
+                .andExpect(jsonPath("$[0].orgAddress").value(output.getOrgAddress()))
+                .andExpect(jsonPath("$[0].orgCity").value(output.getOrgCity()))
+                .andExpect(jsonPath("$[0].orgState").value(output.getOrgState()))
+                .andExpect(jsonPath("$[0].orgPostalCode").value(output.getOrgPostalCode()))
+                .andExpect(jsonPath("$[0].orgCountry").value(output.getOrgCountry()));
+    }
 }

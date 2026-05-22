@@ -6,10 +6,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/organizations")
@@ -22,5 +25,11 @@ public class OrganizationController {
     public ResponseEntity<OrganizationDTO> createOrganization(@Valid @RequestBody OrganizationDTO organizationRequest) {
         OrganizationDTO savedOrganization = organizationService.createOrganization(organizationRequest);
         return new ResponseEntity<>(savedOrganization, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<OrganizationDTO>> getAllOrganizations() {
+        List<OrganizationDTO> organizations = organizationService.getAllOrganizations();
+        return new ResponseEntity<>(organizations, HttpStatus.OK);
     }
 }

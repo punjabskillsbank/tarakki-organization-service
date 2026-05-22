@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -90,5 +91,20 @@ public class OrganizationServiceImplTest {
 
         assertEquals("owner not found at given ownerId: " + ownerId, exception.getMessage());
         verify(memberRepository).findById(ownerId);
+    }
+
+    @Test
+    void getAllOrganizations_shouldReturnOrganizationDTOList() {
+        when(organizationRepository.findAll()).thenReturn(List.of(organization));
+        when(mapper.map(any(Organization.class), eq(OrganizationDTO.class))).thenReturn(dto);
+
+        List<OrganizationDTO> result = organizationService.getAllOrganizations();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(dto.getOrgName(), result.get(0).getOrgName());
+
+        verify(organizationRepository).findAll();
+        verify(mapper).map(any(Organization.class), eq(OrganizationDTO.class));
     }
 }
