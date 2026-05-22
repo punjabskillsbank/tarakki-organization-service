@@ -171,7 +171,7 @@ public class OrganizationControllerTest {
     void shouldGetAllOrganizations() throws Exception {
         when(organizationService.getAllOrganizations()).thenReturn(List.of(output));
 
-        mockMvc.perform(get("/api/organizations")
+        mockMvc.perform(get("/api/organizations/getAllOrganizations")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].orgName").value(output.getOrgName()))

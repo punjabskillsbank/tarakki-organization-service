@@ -27,7 +27,7 @@ public class OrganizationController {
         return new ResponseEntity<>(savedOrganization, HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping("/getAllOrganizations")
     public ResponseEntity<List<OrganizationDTO>> getAllOrganizations() {
         List<OrganizationDTO> organizations = organizationService.getAllOrganizations();
         return new ResponseEntity<>(organizations, HttpStatus.OK);
