@@ -1,7 +1,7 @@
 package com.tarakki.organization.controller;
 
 import com.tarakki.organization.dto.AdminOrganizationDTO;
-import com.tarakki.organization.service.OrganizationService;
+import com.tarakki.organization.service.AdminOrganizationService;
 import com.tarakki.organization.test_utils.factory.OrganizationTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ public class AdminControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private OrganizationService organizationService;
+    private AdminOrganizationService adminOrganizationService;
 
     private AdminOrganizationDTO output;
 
@@ -37,34 +37,20 @@ public class AdminControllerTest {
 
     @Test
     void shouldGetAllOrganizationsForAdmin() throws Exception {
-        when(organizationService.getAllOrganizationsForAdmin()).thenReturn(List.of(output));
+        when(adminOrganizationService.getAllOrganizations()).thenReturn(List.of(output));
 
-        mockMvc.perform(get("/api/admin/organizations")
+        mockMvc.perform(get("/api/admin/organizations/getAllOrganizations")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].orgId").value(output.getOrgId()))
                 .andExpect(jsonPath("$[0].orgName").value(output.getOrgName()))
                 .andExpect(jsonPath("$[0].orgDesc").value(output.getOrgDesc()))
-                .andExpect(jsonPath("$[0].owner.memberId").value(output.getOwner().getMemberId().toString()))
-                .andExpect(jsonPath("$[0].owner.firstName").value(output.getOwner().getFirstName()))
-                .andExpect(jsonPath("$[0].owner.lastName").value(output.getOwner().getLastName()))
-                .andExpect(jsonPath("$[0].owner.email").value(output.getOwner().getEmail()))
-                .andExpect(jsonPath("$[0].owner.profilePhotoS3Key").value(output.getOwner().getProfilePhotoS3Key()))
-                .andExpect(jsonPath("$[0].owner.accountStatus").value(output.getOwner().getAccountStatus().name()))
+                .andExpect(jsonPath("$[0].ownerId").value(output.getOwnerId().toString()))
                 .andExpect(jsonPath("$[0].orgAddress").value(output.getOrgAddress()))
                 .andExpect(jsonPath("$[0].orgCity").value(output.getOrgCity()))
                 .andExpect(jsonPath("$[0].orgState").value(output.getOrgState()))
                 .andExpect(jsonPath("$[0].orgPostalCode").value(output.getOrgPostalCode()))
                 .andExpect(jsonPath("$[0].orgCountry").value(output.getOrgCountry()))
                 .andExpect(jsonPath("$[0].totalMemberCount").value(output.getTotalMemberCount()));
-    }
-
-    @Test
-    void shouldGetAllOrganizationsForAdminUsingLegacyPath() throws Exception {
-        when(organizationService.getAllOrganizationsForAdmin()).thenReturn(List.of(output));
-
-        mockMvc.perform(get("/api/admin/organizations/getAllOrganizations")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
     }
 }

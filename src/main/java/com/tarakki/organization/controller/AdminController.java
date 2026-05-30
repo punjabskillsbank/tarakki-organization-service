@@ -1,7 +1,7 @@
 package com.tarakki.organization.controller;
 
 import com.tarakki.organization.dto.AdminOrganizationDTO;
-import com.tarakki.organization.service.OrganizationService;
+import com.tarakki.organization.service.AdminOrganizationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +16,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminController {
 
-    private final OrganizationService organizationService;
+    private final AdminOrganizationService adminOrganizationService;
 
-    @GetMapping({"", "/getAllOrganizations"})
+    @GetMapping("/getAllOrganizations")
     public ResponseEntity<List<AdminOrganizationDTO>> getAllOrganizations() {
-        List<AdminOrganizationDTO> organizations = organizationService.getAllOrganizationsForAdmin();
+        List<AdminOrganizationDTO> organizations = adminOrganizationService.getAllOrganizations();
         return new ResponseEntity<>(organizations, HttpStatus.OK);
     }
 }

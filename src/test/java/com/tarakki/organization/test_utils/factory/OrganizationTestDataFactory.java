@@ -1,10 +1,8 @@
 package com.tarakki.organization.test_utils.factory;
 
 import com.tarakki.common.entity.Organization;
-import com.tarakki.common.enums.AccountStatus;
 import com.tarakki.organization.dto.AdminOrganizationDTO;
 import com.tarakki.organization.dto.OrganizationDTO;
-import com.tarakki.organization.dto.OrganizationOwnerDTO;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -43,14 +41,7 @@ public class OrganizationTestDataFactory {
         return AdminOrganizationDTO.builder()
                 .orgId(orgId)
                 .orgName("ngo")
-                .owner(OrganizationOwnerDTO.builder()
-                        .memberId(ownerId)
-                        .firstName("Sahib")
-                        .lastName("Singh")
-                        .email("sahib@gmail.com")
-                        .profilePhotoS3Key("profile-photo-key")
-                        .accountStatus(AccountStatus.ACTIVE)
-                        .build())
+                .ownerId(ownerId)
                 .orgDesc("desc")
                 .orgAddress("example address")
                 .orgCity("chandigarh")
@@ -60,4 +51,5 @@ public class OrganizationTestDataFactory {
                 .totalMemberCount(totalMemberCount)
                 .build();
     }
+
 }

@@ -3,10 +3,10 @@ package com.tarakki.organization.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-@EqualsAndHashCode
+import java.util.UUID;
+
 @Builder(toBuilder = true)
 @Data
 @NoArgsConstructor
@@ -15,7 +15,7 @@ public class AdminOrganizationDTO {
     private Long orgId;
     private String orgName;
     private String orgDesc;
-    private OrganizationOwnerDTO owner;
+    private UUID ownerId;
     private String orgAddress;
     private String orgCity;
     private String orgState;
