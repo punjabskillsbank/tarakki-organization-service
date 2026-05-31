@@ -88,6 +88,11 @@
 			<artifactId>tarakki-common</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.tarakki.member</groupId>
+			<artifactId>tarakki-member-service</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>

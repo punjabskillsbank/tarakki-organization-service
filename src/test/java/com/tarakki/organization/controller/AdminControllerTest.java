@@ -39,13 +39,13 @@ public class AdminControllerTest {
     void shouldGetAllOrganizationsForAdmin() throws Exception {
         when(adminOrganizationService.getAllOrganizations()).thenReturn(List.of(output));
 
-        mockMvc.perform(get("/api/admin/organizations/getAllOrganizations")
+        mockMvc.perform(get("/api/admin/organizations/")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].orgId").value(output.getOrgId()))
                 .andExpect(jsonPath("$[0].orgName").value(output.getOrgName()))
                 .andExpect(jsonPath("$[0].orgDesc").value(output.getOrgDesc()))
-                .andExpect(jsonPath("$[0].ownerId").value(output.getOwnerId().toString()))
+                .andExpect(jsonPath("$[0].owner.memberId").value(output.getOwner().getMemberId().toString()))
                 .andExpect(jsonPath("$[0].orgAddress").value(output.getOrgAddress()))
                 .andExpect(jsonPath("$[0].orgCity").value(output.getOrgCity()))
                 .andExpect(jsonPath("$[0].orgState").value(output.getOrgState()))

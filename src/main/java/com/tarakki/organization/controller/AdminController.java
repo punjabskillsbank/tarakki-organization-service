@@ -18,7 +18,7 @@ public class AdminController {
 
     private final AdminOrganizationService adminOrganizationService;
 
-    @GetMapping("/getAllOrganizations")
+    @GetMapping("/")
     public ResponseEntity<List<AdminOrganizationDTO>> getAllOrganizations() {
         List<AdminOrganizationDTO> organizations = adminOrganizationService.getAllOrganizations();
         return new ResponseEntity<>(organizations, HttpStatus.OK);

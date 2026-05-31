@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
+import com.tarakki.member.dto.MemberDTO;
 
 @Builder(toBuilder = true)
 @Data
@@ -15,7 +15,7 @@ public class AdminOrganizationDTO {
     private Long orgId;
     private String orgName;
     private String orgDesc;
-    private UUID ownerId;
+    private MemberDTO owner;
     private String orgAddress;
     private String orgCity;
     private String orgState;
