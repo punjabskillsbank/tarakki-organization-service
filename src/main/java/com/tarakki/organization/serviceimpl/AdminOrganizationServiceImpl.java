@@ -1,7 +1,6 @@
 package com.tarakki.organization.serviceimpl;
 
 import com.tarakki.common.entity.Member;
-import com.tarakki.member.dto.MemberDTO;
 import com.tarakki.organization.dto.AdminOrganizationDTO;
 import com.tarakki.organization.repository.MemberRepository;
 import com.tarakki.organization.repository.OrganizationRepository;
@@ -43,8 +42,7 @@ public class AdminOrganizationServiceImpl implements AdminOrganizationService {
                     UUID ownerId = (UUID) details.get("ownerId");
                     if (ownerId != null && membersMap.containsKey(ownerId)) {
                         Member member = membersMap.get(ownerId);
-                        MemberDTO memberDTO = mapper.map(member, MemberDTO.class);
-                        dto.setOwner(memberDTO);
+                        dto.setOwner(member);
                     }
                     return dto;
                 })

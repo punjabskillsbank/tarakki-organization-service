@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import com.tarakki.member.dto.MemberDTO;
+import com.tarakki.common.entity.Member;
 
 @Builder(toBuilder = true)
 @Data
@@ -15,7 +15,7 @@ public class AdminOrganizationDTO {
     private Long orgId;
     private String orgName;
     private String orgDesc;
-    private MemberDTO owner;
+    private Member owner;
     private String orgAddress;
     private String orgCity;
     private String orgState;

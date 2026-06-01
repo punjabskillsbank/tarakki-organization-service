@@ -1,7 +1,6 @@
 package com.tarakki.organization.serviceimpl;
 
 import com.tarakki.common.entity.Member;
-import com.tarakki.member.dto.MemberDTO;
 import com.tarakki.organization.dto.AdminOrganizationDTO;
 import com.tarakki.organization.repository.MemberRepository;
 import com.tarakki.organization.repository.OrganizationRepository;
@@ -43,7 +42,6 @@ public class AdminOrganizationServiceImplTest {
     private Map<String, Object> organizationDetails;
     private UUID ownerId;
     private Member ownerMember;
-    private MemberDTO ownerMemberDTO;
 
     @BeforeEach
     void setup() {
@@ -53,9 +51,7 @@ public class AdminOrganizationServiceImplTest {
         organizationDetails.put("totalMemberCount", 3L);
         organizationDetails.put("ownerId", ownerId);
 
-        ownerMember = new Member();
-        ownerMember.setMemberId(ownerId);
-        ownerMemberDTO = OrganizationTestDataFactory.createMemberDTO(ownerId);
+        ownerMember = OrganizationTestDataFactory.createMemberEntity(ownerId);
     }
 
     @Test
@@ -64,19 +60,17 @@ public class AdminOrganizationServiceImplTest {
                 .thenReturn(List.of(organizationDetails));
         when(memberRepository.findAllById(List.of(ownerId))).thenReturn(List.of(ownerMember));
         when(mapper.map(organizationDetails, AdminOrganizationDTO.class)).thenReturn(organizationDTO);
-        when(mapper.map(ownerMember, MemberDTO.class)).thenReturn(ownerMemberDTO);
 
         List<AdminOrganizationDTO> result = adminOrganizationService.getAllOrganizations();
 
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(organizationDTO.getOrgName(), result.get(0).getOrgName());
-        assertEquals(ownerMemberDTO, result.get(0).getOwner());
+        assertEquals(ownerMember, result.get(0).getOwner());
         assertEquals(3L, result.get(0).getTotalMemberCount());
 
         verify(organizationRepository).findAllOrganizationsWithOwnerAndMemberCount();
         verify(memberRepository).findAllById(List.of(ownerId));
         verify(mapper).map(organizationDetails, AdminOrganizationDTO.class);
-        verify(mapper).map(ownerMember, MemberDTO.class);
     }
 }
