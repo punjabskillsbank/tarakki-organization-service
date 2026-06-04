@@ -52,7 +52,7 @@ public class OrganizationServiceImplTest {
     }
 
     @Test
-    void createWorkspace_shouldReturnSavedWorkspaceDTO() {
+    void createOrganization_shouldReturnSavedOrganizationDTO() {
         when(memberRepository.findById(ownerId)).thenReturn(Optional.of(new Member()));
         when(mapper
                 .map(any(OrganizationDTO.class), eq(Organization.class)))
@@ -82,7 +82,7 @@ public class OrganizationServiceImplTest {
     }
 
     @Test
-    void createWorkspace_shouldThrowOwnerIdNotFoundExceptionWhenOwnerIdIsMissing() {
+    void createOrganization_shouldThrowOwnerIdNotFoundExceptionWhenOwnerIdIsMissing() {
         when(memberRepository.findById(ownerId)).thenReturn(Optional.empty());
 
         OwnerIdNotFoundException exception = assertThrows(OwnerIdNotFoundException.class,
