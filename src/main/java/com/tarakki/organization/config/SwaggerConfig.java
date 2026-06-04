@@ -13,8 +13,8 @@ public class SwaggerConfig {
 
         return new OpenAPI()
                 .info(new Info()
-                        .title("Tarakki Board Task Service API")
+                        .title("Tarakki Organization Service API")
                         .version("1.0")
-                        .description("API documentation for Tarakki Board Task Service"));
+                        .description("API documentation for Tarakki Organization Task Service"));
     }
 }
