@@ -13,6 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrganizationDTO {
+    private String orgId;
     @NotBlank(message = "Organization name must not be empty")
     private String orgName;
     @NotBlank(message = "Description must not be empty")
