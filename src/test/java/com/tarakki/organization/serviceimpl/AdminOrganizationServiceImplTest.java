@@ -1,28 +1,23 @@
 package com.tarakki.organization.serviceimpl;
 
-import com.tarakki.common.entity.Member;
 import com.tarakki.common.dto.MemberDTO;
 import com.tarakki.organization.dto.AdminOrganizationDTO;
-import com.tarakki.organization.repository.MemberRepository;
 import com.tarakki.organization.repository.OrganizationRepository;
 import com.tarakki.organization.test_utils.factory.OrganizationTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.web.client.RestClient;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,17 +28,24 @@ public class AdminOrganizationServiceImplTest {
     private OrganizationRepository organizationRepository;
 
     @Mock
-    private MemberRepository memberRepository;
-
-    @Mock
     private ModelMapper mapper;
 
-    @InjectMocks
+    @Mock
+    private RestClient restClient;
+
+    @Mock
+    private RestClient.RequestHeadersUriSpec requestHeadersUriSpec;
+
+    @Mock
+    private RestClient.RequestHeadersSpec requestHeadersSpec;
+
+    @Mock
+    private RestClient.ResponseSpec responseSpec;
+
     private AdminOrganizationServiceImpl adminOrganizationService;
 
     private AdminOrganizationDTO organizationDTO;
     private MemberDTO memberDTO;
-    private Member member;
     private Map<String, Object> organizationDetails;
     private UUID ownerId;
 
@@ -52,26 +54,21 @@ public class AdminOrganizationServiceImplTest {
         ownerId = UUID.randomUUID();
 
         memberDTO = OrganizationTestDataFactory.createMemberDTO(ownerId);
-        member = OrganizationTestDataFactory.createMemberEntity(ownerId);
 
-        organizationDTO =
-                OrganizationTestDataFactory.createAdminOrganizationDTO(
-                        1L,
-                        ownerId,
-                        3L
-                );
+        organizationDTO = OrganizationTestDataFactory.createAdminOrganizationDTO(1L, ownerId, 3L);
 
-        organizationDetails = new HashMap<>();
-        organizationDetails.put("orgId", 1L);
-        organizationDetails.put("orgName", "Tarakki Organization");
-        organizationDetails.put("orgDesc", "desc");
-        organizationDetails.put("ownerId", ownerId);
-        organizationDetails.put("orgAddress", "example address");
-        organizationDetails.put("orgCity", "chandigarh");
-        organizationDetails.put("orgState", "Punjab");
-        organizationDetails.put("orgPostalCode", "140003");
-        organizationDetails.put("orgCountry", "India");
-        organizationDetails.put("totalMemberCount", 3L);
+        organizationDetails = OrganizationTestDataFactory.createOrganizationDetails(1L, ownerId, 3L);
+        adminOrganizationService = new AdminOrganizationServiceImpl(
+                organizationRepository,
+                mapper,
+                restClient,
+                "http://localhost:8081"
+        );
+
+        when(restClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri("http://localhost:8081/api/members/{memberId}", ownerId))
+                .thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
     }
 
     @Test
@@ -83,11 +80,7 @@ public class AdminOrganizationServiceImplTest {
         when(mapper.map(organizationDetails, AdminOrganizationDTO.class))
                 .thenReturn(organizationDTO);
 
-        when(memberRepository.findAllById(any()))
-                .thenReturn(List.of(member));
-
-        when(mapper.map(eq(member), eq(MemberDTO.class)))
-                .thenReturn(memberDTO);
+        when(responseSpec.body(MemberDTO.class)).thenReturn(memberDTO);
 
         List<AdminOrganizationDTO> result =
                 adminOrganizationService.getAllOrganizations();
@@ -102,11 +95,19 @@ public class AdminOrganizationServiceImplTest {
                 organizationDTO.getTotalMemberCount(),
                 result.get(0).getTotalMemberCount()
         );
+        assertNotNull(result.get(0).getOwner());
+        assertEquals(memberDTO.getMemberId(), result.get(0).getOwner().getMemberId());
+        assertEquals(memberDTO.getEmail(), result.get(0).getOwner().getEmail());
 
         verify(organizationRepository)
                 .findAllOrganizationsWithOwnerAndMemberCount();
 
         verify(mapper)
                 .map(organizationDetails, AdminOrganizationDTO.class);
+        verify(restClient).get();
+        verify(requestHeadersUriSpec)
+                .uri("http://localhost:8081/api/members/{memberId}", ownerId);
+        verify(requestHeadersSpec).retrieve();
+        verify(responseSpec).body(MemberDTO.class);
     }
 }

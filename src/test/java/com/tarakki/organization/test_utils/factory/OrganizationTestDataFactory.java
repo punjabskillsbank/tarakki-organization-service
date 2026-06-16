@@ -8,6 +8,8 @@ import com.tarakki.organization.dto.AdminOrganizationDTO;
 import com.tarakki.organization.dto.OrganizationDTO;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class OrganizationTestDataFactory {
@@ -75,6 +77,21 @@ public class OrganizationTestDataFactory {
                 .orgCountry("India")
                 .totalMemberCount(totalMemberCount)
                 .build();
+    }
+
+    public static Map<String, Object> createOrganizationDetails(Long orgId, UUID ownerId, Long totalMemberCount) {
+        Map<String, Object> organizationDetails = new HashMap<>();
+        organizationDetails.put("orgId", orgId);
+        organizationDetails.put("orgName", "Tarakki Organization");
+        organizationDetails.put("orgDesc", "desc");
+        organizationDetails.put("ownerId", ownerId);
+        organizationDetails.put("orgAddress", "example address");
+        organizationDetails.put("orgCity", "chandigarh");
+        organizationDetails.put("orgState", "Punjab");
+        organizationDetails.put("orgPostalCode", "140003");
+        organizationDetails.put("orgCountry", "India");
+        organizationDetails.put("totalMemberCount", totalMemberCount);
+        return organizationDetails;
     }
 
 }

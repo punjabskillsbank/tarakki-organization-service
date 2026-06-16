@@ -1,14 +1,14 @@
 package com.tarakki.organization.serviceimpl;
 
-import com.tarakki.common.entity.Member;
 import com.tarakki.common.dto.MemberDTO;
 import com.tarakki.organization.dto.AdminOrganizationDTO;
-import com.tarakki.organization.repository.MemberRepository;
 import com.tarakki.organization.repository.OrganizationRepository;
 import com.tarakki.organization.service.AdminOrganizationService;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 import java.util.List;
 import java.util.Map;
@@ -17,12 +17,24 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class AdminOrganizationServiceImpl implements AdminOrganizationService {
 
     private final OrganizationRepository organizationRepository;
-    private final MemberRepository memberRepository;
     private final ModelMapper mapper;
+    private final RestClient restClient;
+    private final String memberServiceBaseUrl;
+
+    public AdminOrganizationServiceImpl(
+        OrganizationRepository organizationRepository,
+        ModelMapper mapper,
+        RestClient restClient,
+        @Value("${member.service.base-url}") String memberServiceBaseUrl
+) {
+    this.organizationRepository = organizationRepository;
+    this.mapper = mapper;
+    this.restClient = restClient;
+    this.memberServiceBaseUrl = memberServiceBaseUrl;
+}
 
     @Override
     public List<AdminOrganizationDTO> getAllOrganizations() {
@@ -34,20 +46,31 @@ public class AdminOrganizationServiceImpl implements AdminOrganizationService {
                 .distinct()
                 .toList();
 
-        Map<UUID, Member> membersMap = memberRepository.findAllById(ownerIds).stream()
-                .collect(Collectors.toMap(Member::getMemberId, member -> member));
+        Map<UUID, MemberDTO> membersMap = ownerIds.stream()
+                .map(this::fetchMember)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(MemberDTO::getMemberId, member -> member));
 
         return orgDetailsList.stream()
                 .map(details -> {
                     AdminOrganizationDTO dto = mapper.map(details, AdminOrganizationDTO.class);
                     UUID ownerId = (UUID) details.get("ownerId");
-                    if (ownerId != null && membersMap.containsKey(ownerId)) {
-                        Member member = membersMap.get(ownerId);
-                        MemberDTO memberDTO = mapper.map(member, MemberDTO.class);
-                        dto.setOwner(memberDTO);
+                    if (ownerId != null) {
+                        dto.setOwner(membersMap.get(ownerId));
                     }
                     return dto;
                 })
                 .toList();
+    }
+
+    private MemberDTO fetchMember(UUID memberId) {
+        try {
+            return restClient.get()
+                    .uri(memberServiceBaseUrl + "/api/members/{memberId}", memberId)
+                    .retrieve()
+                    .body(MemberDTO.class);
+        } catch (RestClientException exception) {
+            return null;
+        }
     }
 }

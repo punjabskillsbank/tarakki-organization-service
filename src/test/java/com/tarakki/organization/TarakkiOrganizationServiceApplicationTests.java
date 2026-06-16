@@ -1,6 +1,5 @@
 package com.tarakki.organization;
 
-import com.tarakki.organization.repository.MemberRepository;
 import com.tarakki.organization.repository.OrganizationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,9 +12,6 @@ class TarakkiOrganizationServiceApplicationTests {
 
 	@MockitoBean
 	private OrganizationRepository organizationRepository;
-
-	@MockitoBean
-	private MemberRepository memberRepository;
 
 	@Test
 	void contextLoads() {
