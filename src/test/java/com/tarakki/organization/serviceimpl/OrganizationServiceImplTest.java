@@ -66,6 +66,7 @@ public class OrganizationServiceImplTest {
         OrganizationDTO result = organizationService.createOrganization(dto);
 
         assertNotNull(result);
+        assertEquals(dto.getOrgId(), result.getOrgId());
         assertEquals(dto.getOrgName(), result.getOrgName());
         assertEquals(dto.getOrgDesc(), result.getOrgDesc());
         assertEquals(dto.getOwnerId(), result.getOwnerId());
