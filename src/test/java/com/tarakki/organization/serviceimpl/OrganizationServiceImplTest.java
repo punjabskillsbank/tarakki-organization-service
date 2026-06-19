@@ -58,12 +58,11 @@ public class OrganizationServiceImplTest {
         organizationService = new OrganizationServiceImpl(
                 organizationRepository,
                 mapper,
-                restClient,
-                "http://localhost:8081"
+                restClient
         );
 
         when(restClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri("http://localhost:8081/api/members/{memberId}", ownerId))
+        when(requestHeadersUriSpec.uri("/api/members/{memberId}", ownerId))
                 .thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
     }
@@ -94,7 +93,7 @@ public class OrganizationServiceImplTest {
 
         verify(restClient).get();
         verify(requestHeadersUriSpec)
-                .uri("http://localhost:8081/api/members/{memberId}", ownerId);
+                .uri("/api/members/{memberId}", ownerId);
         verify(requestHeadersSpec).retrieve();
         verify(responseSpec).body(MemberDTO.class);
         verify(mapper).map(any(OrganizationDTO.class), eq(Organization.class));
@@ -112,7 +111,7 @@ public class OrganizationServiceImplTest {
         assertEquals("owner not found at given ownerId: " + ownerId, exception.getMessage());
         verify(restClient).get();
         verify(requestHeadersUriSpec)
-                .uri("http://localhost:8081/api/members/{memberId}", ownerId);
+                .uri("/api/members/{memberId}", ownerId);
         verify(requestHeadersSpec).retrieve();
         verify(responseSpec).body(MemberDTO.class);
     }

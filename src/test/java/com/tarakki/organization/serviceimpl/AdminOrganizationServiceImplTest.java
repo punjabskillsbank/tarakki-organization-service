@@ -61,12 +61,11 @@ public class AdminOrganizationServiceImplTest {
         adminOrganizationService = new AdminOrganizationServiceImpl(
                 organizationRepository,
                 mapper,
-                restClient,
-                "http://localhost:8081"
+                restClient
         );
 
         when(restClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri("http://localhost:8081/api/members/{memberId}", ownerId))
+        when(requestHeadersUriSpec.uri("/api/members/{memberId}", ownerId))
                 .thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
     }
@@ -106,7 +105,7 @@ public class AdminOrganizationServiceImplTest {
                 .map(organizationDetails, AdminOrganizationDTO.class);
         verify(restClient).get();
         verify(requestHeadersUriSpec)
-                .uri("http://localhost:8081/api/members/{memberId}", ownerId);
+                .uri("/api/members/{memberId}", ownerId);
         verify(requestHeadersSpec).retrieve();
         verify(responseSpec).body(MemberDTO.class);
     }

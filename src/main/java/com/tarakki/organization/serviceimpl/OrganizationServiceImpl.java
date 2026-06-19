@@ -8,7 +8,6 @@ import com.tarakki.organization.repository.OrganizationRepository;
 import com.tarakki.organization.service.OrganizationService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClient;
@@ -20,19 +19,16 @@ public class OrganizationServiceImpl implements OrganizationService {
     private final OrganizationRepository organizationRepository;
     private final ModelMapper mapper;
     private final RestClient restClient;
-    private final String memberServiceBaseUrl;
 
     public OrganizationServiceImpl(
         OrganizationRepository organizationRepository,
         ModelMapper mapper,
-        RestClient restClient,
-        @Value("${member.service.base-url}") String memberServiceBaseUrl
-) {
-    this.organizationRepository = organizationRepository;
-    this.mapper = mapper;
-    this.restClient = restClient;
-    this.memberServiceBaseUrl = memberServiceBaseUrl;
-}
+        RestClient restClient
+    ) {
+        this.organizationRepository = organizationRepository;
+        this.mapper = mapper;
+        this.restClient = restClient;
+    }
 
     @Override
     @Transactional
@@ -49,7 +45,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     private MemberDTO fetchMember(UUID memberId) {
         try {
             return restClient.get()
-                    .uri(memberServiceBaseUrl + "/api/members/{memberId}", memberId)
+                    .uri("/api/members/{memberId}", memberId)
                     .retrieve()
                     .body(MemberDTO.class);
         } catch (RestClientException exception) {

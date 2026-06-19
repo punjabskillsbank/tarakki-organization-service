@@ -5,7 +5,6 @@ import com.tarakki.organization.dto.AdminOrganizationDTO;
 import com.tarakki.organization.repository.OrganizationRepository;
 import com.tarakki.organization.service.AdminOrganizationService;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -22,19 +21,16 @@ public class AdminOrganizationServiceImpl implements AdminOrganizationService {
     private final OrganizationRepository organizationRepository;
     private final ModelMapper mapper;
     private final RestClient restClient;
-    private final String memberServiceBaseUrl;
 
     public AdminOrganizationServiceImpl(
         OrganizationRepository organizationRepository,
         ModelMapper mapper,
-        RestClient restClient,
-        @Value("${member.service.base-url}") String memberServiceBaseUrl
-) {
-    this.organizationRepository = organizationRepository;
-    this.mapper = mapper;
-    this.restClient = restClient;
-    this.memberServiceBaseUrl = memberServiceBaseUrl;
-}
+        RestClient restClient
+    ) {
+        this.organizationRepository = organizationRepository;
+        this.mapper = mapper;
+        this.restClient = restClient;
+    }
 
     @Override
     public List<AdminOrganizationDTO> getAllOrganizations() {
@@ -66,7 +62,7 @@ public class AdminOrganizationServiceImpl implements AdminOrganizationService {
     private MemberDTO fetchMember(UUID memberId) {
         try {
             return restClient.get()
-                    .uri(memberServiceBaseUrl + "/api/members/{memberId}", memberId)
+                    .uri("/api/members/{memberId}", memberId)
                     .retrieve()
                     .body(MemberDTO.class);
         } catch (RestClientException exception) {
