@@ -57,6 +57,7 @@ public class OrganizationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.orgId").value(output.getOrgId()))
                 .andExpect(jsonPath("$.orgName").value(output.getOrgName()))
                 .andExpect(jsonPath("$.orgDesc").value(output.getOrgDesc()))
                 .andExpect(jsonPath("$.orgAddress").value(output.getOrgAddress()))
