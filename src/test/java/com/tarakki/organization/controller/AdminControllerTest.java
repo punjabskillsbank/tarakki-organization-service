@@ -2,7 +2,7 @@ package com.tarakki.organization.controller;
 
 import com.tarakki.organization.dto.AdminOrganizationDTO;
 import com.tarakki.organization.service.AdminOrganizationService;
-import com.tarakki.organization.test_utils.factory.OrganizationTestDataFactory;
+import com.tarakki.organization.test_utils.factory.AdminOrganizationTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +29,12 @@ public class AdminControllerTest {
     private AdminOrganizationService adminOrganizationService;
 
     private AdminOrganizationDTO output;
+    private UUID ownerId;
 
     @BeforeEach
     void setUp() {
-        output = OrganizationTestDataFactory.createAdminOrganizationDTO(1L, UUID.randomUUID(), 3L);
+        ownerId = UUID.randomUUID();
+        output = AdminOrganizationTestDataFactory.createAdminOrganizationDTO(1L, ownerId, 3L);
     }
 
     @Test

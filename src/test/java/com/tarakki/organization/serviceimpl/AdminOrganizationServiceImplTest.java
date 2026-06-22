@@ -3,10 +3,11 @@ package com.tarakki.organization.serviceimpl;
 import com.tarakki.common.dto.MemberDTO;
 import com.tarakki.organization.dto.AdminOrganizationDTO;
 import com.tarakki.organization.repository.OrganizationRepository;
-import com.tarakki.organization.test_utils.factory.OrganizationTestDataFactory;
+import com.tarakki.organization.test_utils.factory.AdminOrganizationTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
@@ -42,6 +43,7 @@ public class AdminOrganizationServiceImplTest {
     @Mock
     private RestClient.ResponseSpec responseSpec;
 
+    @InjectMocks
     private AdminOrganizationServiceImpl adminOrganizationService;
 
     private AdminOrganizationDTO organizationDTO;
@@ -53,16 +55,11 @@ public class AdminOrganizationServiceImplTest {
     void setup() {
         ownerId = UUID.randomUUID();
 
-        memberDTO = OrganizationTestDataFactory.createMemberDTO(ownerId);
+        memberDTO = AdminOrganizationTestDataFactory.createMemberDTO(ownerId);
 
-        organizationDTO = OrganizationTestDataFactory.createAdminOrganizationDTO(1L, ownerId, 3L);
+        organizationDTO = AdminOrganizationTestDataFactory.createAdminOrganizationDTO(1L, ownerId, 3L);
 
         organizationDetails = OrganizationTestDataFactory.createOrganizationDetails(1L, ownerId, 3L);
-        adminOrganizationService = new AdminOrganizationServiceImpl(
-                organizationRepository,
-                mapper,
-                restClient
-        );
 
         when(restClient.get()).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.uri("/api/members/{memberId}", ownerId))

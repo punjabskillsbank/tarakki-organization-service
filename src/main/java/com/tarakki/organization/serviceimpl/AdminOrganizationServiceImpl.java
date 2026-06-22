@@ -4,6 +4,7 @@ import com.tarakki.common.dto.MemberDTO;
 import com.tarakki.organization.dto.AdminOrganizationDTO;
 import com.tarakki.organization.repository.OrganizationRepository;
 import com.tarakki.organization.service.AdminOrganizationService;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -16,21 +17,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AdminOrganizationServiceImpl implements AdminOrganizationService {
 
     private final OrganizationRepository organizationRepository;
     private final ModelMapper mapper;
     private final RestClient restClient;
-
-    public AdminOrganizationServiceImpl(
-        OrganizationRepository organizationRepository,
-        ModelMapper mapper,
-        RestClient restClient
-    ) {
-        this.organizationRepository = organizationRepository;
-        this.mapper = mapper;
-        this.restClient = restClient;
-    }
 
     @Override
     public List<AdminOrganizationDTO> getAllOrganizations() {

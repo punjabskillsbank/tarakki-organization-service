@@ -6,6 +6,7 @@ import com.tarakki.organization.dto.OrganizationDTO;
 import com.tarakki.organization.exceptionhandling.OwnerIdNotFoundException;
 import com.tarakki.organization.repository.MemberRepository;
 import com.tarakki.organization.repository.OrganizationRepository;
+import com.tarakki.organization.test_utils.factory.AdminOrganizationTestDataFactory;
 import com.tarakki.organization.test_utils.factory.OrganizationTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,7 @@ public class OrganizationServiceImplTest {
         ownerId = UUID.randomUUID();
         dto = OrganizationTestDataFactory.createOrganizationDTO(1L, ownerId);
         organization = OrganizationTestDataFactory.createOrganizationEntity(1L, ownerId);
-        Member owner = OrganizationTestDataFactory.createMemberEntity(ownerId);
+        Member owner = AdminOrganizationTestDataFactory.createMemberEntity(ownerId);
         organizationService = new OrganizationServiceImpl(
                 organizationRepository,
                 memberRepository,

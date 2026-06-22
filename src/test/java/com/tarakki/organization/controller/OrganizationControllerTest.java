@@ -32,19 +32,22 @@ public class OrganizationControllerTest {
     @MockitoBean
     private OrganizationService organizationService;
 
-     @MockitoBean
+    @MockitoBean
     private AdminOrganizationService adminOrganizationService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private OrganizationDTO input;
     private OrganizationDTO output;
+    private Long orgId;
+    private UUID ownerId;
 
     @BeforeEach
     void setUp() {
-       UUID ownerId = UUID.randomUUID();
-        input = OrganizationTestDataFactory.createOrganizationDTO(1L, ownerId);
-        output = OrganizationTestDataFactory.createOrganizationDTO(1L, ownerId);
+        orgId = 1L;
+        ownerId = UUID.randomUUID();
+        input = OrganizationTestDataFactory.createOrganizationDTO(orgId, ownerId);
+        output = OrganizationTestDataFactory.createOrganizationDTO(orgId, ownerId);
     }
 
     @Test
