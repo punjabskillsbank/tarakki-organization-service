@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = OrganizationController.class)
+@WebMvcTest(OrganizationController.class)
 public class OrganizationControllerTest {
 
     @Autowired
@@ -44,7 +44,7 @@ public class OrganizationControllerTest {
 
     @BeforeEach
     void setUp() {
-        orgId = 1L;
+        orgId = OrganizationTestDataFactory.createOrganizationId();
         ownerId = UUID.randomUUID();
         input = OrganizationTestDataFactory.createOrganizationDTO(orgId, ownerId);
         output = OrganizationTestDataFactory.createOrganizationDTO(orgId, ownerId);

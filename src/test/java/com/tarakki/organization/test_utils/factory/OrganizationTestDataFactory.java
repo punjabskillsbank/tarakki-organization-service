@@ -9,6 +9,10 @@ import java.util.Map;
 import java.util.UUID;
 
 public class OrganizationTestDataFactory {
+    public static Long createOrganizationId() {
+        return 1L;
+    }
+
     public static OrganizationDTO createOrganizationDTO(Long orgId, UUID ownerId) {
         return OrganizationDTO.builder()
                 .orgName("ngo")
