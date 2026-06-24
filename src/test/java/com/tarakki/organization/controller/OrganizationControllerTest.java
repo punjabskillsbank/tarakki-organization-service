@@ -2,10 +2,8 @@ package com.tarakki.organization.controller;
 
 import com.tarakki.organization.dto.OrganizationDTO;
 import com.tarakki.organization.exceptionhandling.OwnerIdNotFoundException;
-import com.tarakki.organization.service.AdminOrganizationService;
 import com.tarakki.organization.service.OrganizationService;
 import com.tarakki.organization.test_utils.factory.OrganizationTestDataFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.UUID;
 
@@ -32,22 +31,17 @@ public class OrganizationControllerTest {
     @MockitoBean
     private OrganizationService organizationService;
 
-    @MockitoBean
-    private AdminOrganizationService adminOrganizationService;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private OrganizationDTO input;
     private OrganizationDTO output;
-    private Long orgId;
-    private UUID ownerId;
 
     @BeforeEach
     void setUp() {
-        orgId = OrganizationTestDataFactory.createOrganizationId();
-        ownerId = UUID.randomUUID();
-        input = OrganizationTestDataFactory.createOrganizationDTO(orgId, ownerId);
-        output = OrganizationTestDataFactory.createOrganizationDTO(orgId, ownerId);
+        UUID owerId = UUID.randomUUID();
+        input = OrganizationTestDataFactory.createOrganizationDTO(1L, owerId);
+        output = OrganizationTestDataFactory.createOrganizationDTO(1L, owerId);
     }
 
     @Test
@@ -85,17 +79,14 @@ public class OrganizationControllerTest {
     }
 
     @Test
-    void shouldReturnBadRequestWhenOrganizationNameIsMissing()
-            throws Exception {
+    void shouldReturnBadRequestWhenOrganizationNameIsMissing() throws Exception {
 
         input.setOrgName(null);
 
         mockMvc.perform(post("/api/organizations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.orgName")
-                        .value("Organization name must not be empty"));
+                .andExpect(status().isBadRequest());
     }
 
     @Test

@@ -1,16 +1,16 @@
 package com.tarakki.organization.serviceimpl;
 
 import com.tarakki.common.entity.Member;
-import com.tarakki.common.entity.Organization;
 import com.tarakki.organization.dto.OrganizationDTO;
-import com.tarakki.organization.exceptionhandling.OwnerIdNotFoundException;
+import com.tarakki.common.entity.Organization;
 import com.tarakki.organization.repository.MemberRepository;
 import com.tarakki.organization.repository.OrganizationRepository;
-import com.tarakki.organization.test_utils.factory.AdminOrganizationTestDataFactory;
+import com.tarakki.organization.exceptionhandling.OwnerIdNotFoundException;
 import com.tarakki.organization.test_utils.factory.OrganizationTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
@@ -37,34 +37,30 @@ public class OrganizationServiceImplTest {
     @Mock
     private ModelMapper mapper;
 
+    @InjectMocks
     private OrganizationServiceImpl organizationService;
 
     private OrganizationDTO dto;
     private Organization organization;
-    private UUID ownerId;
+    UUID ownerId;
 
     @BeforeEach
     void setup() {
         ownerId = UUID.randomUUID();
         dto = OrganizationTestDataFactory.createOrganizationDTO(1L, ownerId);
         organization = OrganizationTestDataFactory.createOrganizationEntity(1L, ownerId);
-        Member owner = AdminOrganizationTestDataFactory.createMemberEntity(ownerId);
-        organizationService = new OrganizationServiceImpl(
-                organizationRepository,
-                memberRepository,
-                mapper
-        );
-
-        when(memberRepository.findById(ownerId)).thenReturn(Optional.of(owner));
     }
 
     @Test
-     void createOrganization_shouldReturnSavedOrganizationDTO() {
-        when(mapper.map(any(OrganizationDTO.class), eq(Organization.class)))
+    void createWorkspace_shouldReturnSavedWorkspaceDTO() {
+        when(memberRepository.findById(ownerId)).thenReturn(Optional.of(new Member()));
+        when(mapper
+                .map(any(OrganizationDTO.class), eq(Organization.class)))
                 .thenReturn(organization);
         when(organizationRepository.save(any(Organization.class)))
                 .thenReturn(organization);
-         when(mapper.map(any(Organization.class), eq(OrganizationDTO.class)))
+        when(mapper
+                .map(any(Organization.class), eq(OrganizationDTO.class)))
                 .thenReturn(dto);
 
         OrganizationDTO result = organizationService.createOrganization(dto);
@@ -87,7 +83,7 @@ public class OrganizationServiceImplTest {
     }
 
     @Test
-     void createOrganization_shouldThrowOwnerIdNotFoundExceptionWhenOwnerIdIsMissing() {
+    void createWorkspace_shouldThrowOwnerIdNotFoundExceptionWhenOwnerIdIsMissing() {
         when(memberRepository.findById(ownerId)).thenReturn(Optional.empty());
 
         OwnerIdNotFoundException exception = assertThrows(OwnerIdNotFoundException.class,
