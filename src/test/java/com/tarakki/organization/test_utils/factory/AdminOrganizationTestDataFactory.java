@@ -1,24 +1,12 @@
 package com.tarakki.organization.test_utils.factory;
 
 import com.tarakki.common.dto.MemberDTO;
-import com.tarakki.common.entity.Member;
 import com.tarakki.common.enums.AccountStatus;
 import com.tarakki.organization.dto.AdminOrganizationDTO;
 
 import java.util.UUID;
 
 public class AdminOrganizationTestDataFactory {
-
-    public static Member createMemberEntity(UUID memberId) {
-        Member member = new Member();
-        member.setMemberId(memberId);
-        member.setFirstName("John");
-        member.setLastName("Doe");
-        member.setEmail("john.doe@example.com");
-        member.setProfilePhotoS3Key("photo.jpg");
-        member.setAccountStatus(AccountStatus.ACTIVE);
-        return member;
-    }
 
     public static MemberDTO createMemberDTO(UUID memberId) {
         MemberDTO memberDTO = new MemberDTO();

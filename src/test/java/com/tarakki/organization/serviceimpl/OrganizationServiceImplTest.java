@@ -1,12 +1,9 @@
 package com.tarakki.organization.serviceimpl;
 
-import com.tarakki.common.entity.Member;
 import com.tarakki.common.entity.Organization;
 import com.tarakki.organization.dto.OrganizationDTO;
 import com.tarakki.organization.exceptionhandling.OwnerIdNotFoundException;
-import com.tarakki.organization.repository.MemberRepository;
 import com.tarakki.organization.repository.OrganizationRepository;
-import com.tarakki.organization.test_utils.factory.AdminOrganizationTestDataFactory;
 import com.tarakki.organization.test_utils.factory.OrganizationTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,8 +11,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,7 +32,13 @@ public class OrganizationServiceImplTest {
     private OrganizationRepository organizationRepository;
 
     @Mock
-    private MemberRepository memberRepository;
+    private RestClient restClient;
+
+    @Mock
+    private RestClient.RequestHeadersUriSpec<?> requestHeadersUriSpec;
+
+    @Mock
+    private RestClient.ResponseSpec responseSpec;
 
     @Mock
     private ModelMapper mapper;
@@ -48,18 +54,20 @@ public class OrganizationServiceImplTest {
         ownerId = UUID.randomUUID();
         dto = OrganizationTestDataFactory.createOrganizationDTO(1L, ownerId);
         organization = OrganizationTestDataFactory.createOrganizationEntity(1L, ownerId);
-        Member owner = AdminOrganizationTestDataFactory.createMemberEntity(ownerId);
         organizationService = new OrganizationServiceImpl(
                 organizationRepository,
-                memberRepository,
-                mapper
+                mapper,
+                restClient
         );
-
-        when(memberRepository.findById(ownerId)).thenReturn(Optional.of(owner));
     }
 
     @Test
      void createOrganization_shouldReturnSavedOrganizationDTO() {
+        doReturn(requestHeadersUriSpec).when(restClient).get();
+        doReturn(requestHeadersUriSpec).when(requestHeadersUriSpec).uri("/api/members/{memberId}", ownerId);
+        doReturn(responseSpec).when(requestHeadersUriSpec).retrieve();
+        doReturn(null).when(responseSpec).toBodilessEntity();
+
         when(mapper.map(any(OrganizationDTO.class), eq(Organization.class)))
                 .thenReturn(organization);
         when(organizationRepository.save(any(Organization.class)))
@@ -80,7 +88,6 @@ public class OrganizationServiceImplTest {
         assertEquals(dto.getOrgState(), result.getOrgState());
         assertEquals(dto.getOrgCountry(), result.getOrgCountry());
 
-        verify(memberRepository).findById(ownerId);
         verify(mapper).map(any(OrganizationDTO.class), eq(Organization.class));
         verify(organizationRepository).save(any(Organization.class));
         verify(mapper).map(any(Organization.class), eq(OrganizationDTO.class));
@@ -88,12 +95,40 @@ public class OrganizationServiceImplTest {
 
     @Test
      void createOrganization_shouldThrowOwnerIdNotFoundExceptionWhenOwnerIdIsMissing() {
-        when(memberRepository.findById(ownerId)).thenReturn(Optional.empty());
+        doReturn(requestHeadersUriSpec).when(restClient).get();
+        doReturn(requestHeadersUriSpec).when(requestHeadersUriSpec).uri("/api/members/{memberId}", ownerId);
+        doReturn(responseSpec).when(requestHeadersUriSpec).retrieve();
+        doThrow(new RestClientException("Not Found")).when(responseSpec).toBodilessEntity();
 
         OwnerIdNotFoundException exception = assertThrows(OwnerIdNotFoundException.class,
                 () -> organizationService.createOrganization(dto));
 
         assertEquals("owner not found at given ownerId: " + ownerId, exception.getMessage());
-        verify(memberRepository).findById(ownerId);
+    }
+
+    @Test
+    void getOrganizationById_shouldReturnOrganizationDTO() {
+        when(organizationRepository.findById(1L)).thenReturn(java.util.Optional.of(organization));
+        when(mapper.map(organization, OrganizationDTO.class)).thenReturn(dto);
+
+        OrganizationDTO result = organizationService.getOrganizationById(1L);
+
+        assertNotNull(result);
+        assertEquals(dto.getOrgId(), result.getOrgId());
+        assertEquals(dto.getOrgName(), result.getOrgName());
+        
+        verify(organizationRepository).findById(1L);
+        verify(mapper).map(organization, OrganizationDTO.class);
+    }
+
+    @Test
+    void getOrganizationById_shouldThrowOrganizationNotFoundExceptionWhenOrganizationNotFound() {
+        when(organizationRepository.findById(1L)).thenReturn(java.util.Optional.empty());
+
+        com.tarakki.organization.exceptionhandling.OrganizationNotFoundException exception = assertThrows(com.tarakki.organization.exceptionhandling.OrganizationNotFoundException.class,
+                () -> organizationService.getOrganizationById(1L));
+
+        assertEquals("Organization with ID 1 not found", exception.getMessage());
+        verify(organizationRepository).findById(1L);
     }
 }

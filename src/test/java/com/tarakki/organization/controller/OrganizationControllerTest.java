@@ -175,4 +175,23 @@ public class OrganizationControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void shouldReturnOrganizationById() throws Exception {
+        when(organizationService.getOrganizationById(orgId)).thenReturn(output);
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/organizations/{organizationId}", orgId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.orgId").value(output.getOrgId()))
+                .andExpect(jsonPath("$.orgName").value(output.getOrgName()));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenOrganizationIsNotFound() throws Exception {
+        when(organizationService.getOrganizationById(orgId))
+                .thenThrow(new com.tarakki.organization.exceptionhandling.OrganizationNotFoundException(orgId));
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/organizations/{organizationId}", orgId))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().string("Organization with ID " + orgId + " not found"));
+    }
 }

@@ -23,4 +23,10 @@ public class OrganizationController {
         OrganizationDTO savedOrganization = organizationService.createOrganization(organizationRequest);
         return new ResponseEntity<>(savedOrganization, HttpStatus.CREATED);
     }
+
+    @org.springframework.web.bind.annotation.GetMapping("/{organizationId}")
+    public ResponseEntity<OrganizationDTO> getOrganizationById(@org.springframework.web.bind.annotation.PathVariable Long organizationId) {
+        OrganizationDTO organizationDTO = organizationService.getOrganizationById(organizationId);
+        return new ResponseEntity<>(organizationDTO, HttpStatus.OK);
+    }
 }
