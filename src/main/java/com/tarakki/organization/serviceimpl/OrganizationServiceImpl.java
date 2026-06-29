@@ -4,12 +4,16 @@ import com.tarakki.common.entity.Organization;
 import com.tarakki.organization.client.MemberClient;
 import com.tarakki.organization.dto.OrganizationDTO;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
+import com.tarakki.organization.exceptionhandling.OwnerIdNotFoundException;
 import com.tarakki.organization.repository.OrganizationRepository;
 import com.tarakki.organization.service.OrganizationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +24,19 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public OrganizationDTO createOrganization(OrganizationDTO organizationRequest) {
-        memberClient.validateMemberExists(organizationRequest.getOwnerId());
+        UUID ownerId = organizationRequest.getOwnerId();
+        if (!isMemberExists(ownerId)) {
+            throw new OwnerIdNotFoundException(ownerId);
+        }
         return saveOrganization(organizationRequest);
+    }
+
+    private boolean isMemberExists(UUID memberId) {
+        try {
+            return memberClient.getMemberById(memberId) != null;
+        } catch (RestClientException exception) {
+            return false;
+        }
     }
 
     @Transactional

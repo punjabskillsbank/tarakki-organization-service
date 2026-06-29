@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.web.client.RestClientException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,6 +59,7 @@ public class OrganizationServiceImplTest {
 
     @Test
     void createOrganization_shouldReturnSavedOrganizationDTO() {
+        when(memberClient.getMemberById(ownerId)).thenReturn("member-data");
         when(mapper.map(any(OrganizationDTO.class), eq(Organization.class)))
                 .thenReturn(organization);
         when(organizationRepository.save(any(Organization.class)))
@@ -79,7 +80,7 @@ public class OrganizationServiceImplTest {
         assertEquals(dto.getOrgState(), result.getOrgState());
         assertEquals(dto.getOrgCountry(), result.getOrgCountry());
 
-        verify(memberClient).validateMemberExists(ownerId);
+        verify(memberClient).getMemberById(ownerId);
         verify(mapper).map(any(OrganizationDTO.class), eq(Organization.class));
         verify(organizationRepository).save(any(Organization.class));
         verify(mapper).map(any(Organization.class), eq(OrganizationDTO.class));
@@ -87,14 +88,14 @@ public class OrganizationServiceImplTest {
 
     @Test
     void createOrganization_shouldThrowOwnerIdNotFoundExceptionWhenOwnerIdIsMissing() {
-        doThrow(new OwnerIdNotFoundException(ownerId))
-                .when(memberClient).validateMemberExists(ownerId);
+        when(memberClient.getMemberById(ownerId))
+                .thenThrow(new RestClientException("member not found"));
 
         OwnerIdNotFoundException exception = assertThrows(OwnerIdNotFoundException.class,
                 () -> organizationService.createOrganization(dto));
 
         assertEquals("owner not found at given ownerId: " + ownerId, exception.getMessage());
-        verify(memberClient).validateMemberExists(ownerId);
+        verify(memberClient).getMemberById(ownerId);
     }
 
     @Test
