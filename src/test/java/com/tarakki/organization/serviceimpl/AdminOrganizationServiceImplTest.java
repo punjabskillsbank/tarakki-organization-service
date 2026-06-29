@@ -50,14 +50,18 @@ public class AdminOrganizationServiceImplTest {
         private AdminOrganizationDTO organizationDTO;
         private Map<String, Object> organizationDetails;
         private UUID ownerId;
+        private Long orgId;
+        private Long totalMemberCount;
 
         @BeforeEach
         void setup() {
                 ownerId = UUID.randomUUID();
+                orgId = OrganizationTestDataFactory.createOrganizationId();
+                totalMemberCount = OrganizationTestDataFactory.createTotalMemberCount();
 
-                organizationDTO = AdminOrganizationTestDataFactory.createAdminOrganizationDTO(1L, ownerId, 3L);
+                organizationDTO = AdminOrganizationTestDataFactory.createAdminOrganizationDTO(orgId, ownerId, totalMemberCount);
 
-                organizationDetails = OrganizationTestDataFactory.createOrganizationDetails(1L, ownerId, 3L);
+                organizationDetails = OrganizationTestDataFactory.createOrganizationDetails(orgId, ownerId, totalMemberCount);
 
                 doReturn(requestHeadersUriSpec).when(restClient).get();
                 doReturn(requestHeadersSpec).when(requestHeadersUriSpec).uri("/api/members/{memberId}", ownerId);

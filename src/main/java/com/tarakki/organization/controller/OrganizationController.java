@@ -6,6 +6,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,8 +26,8 @@ public class OrganizationController {
         return new ResponseEntity<>(savedOrganization, HttpStatus.CREATED);
     }
 
-    @org.springframework.web.bind.annotation.GetMapping("/{organizationId}")
-    public ResponseEntity<OrganizationDTO> getOrganizationById(@org.springframework.web.bind.annotation.PathVariable Long organizationId) {
+    @GetMapping("/{organizationId}")
+    public ResponseEntity<OrganizationDTO> getOrganizationById(@PathVariable Long organizationId) {
         OrganizationDTO organizationDTO = organizationService.getOrganizationById(organizationId);
         return new ResponseEntity<>(organizationDTO, HttpStatus.OK);
     }

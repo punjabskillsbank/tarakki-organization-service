@@ -13,6 +13,10 @@ public class OrganizationTestDataFactory {
         return 1L;
     }
 
+    public static Long createTotalMemberCount() {
+        return 3L;
+    }
+
     public static OrganizationDTO createOrganizationDTO(Long orgId, UUID ownerId) {
         return OrganizationDTO.builder()
                 .orgName("ngo")
