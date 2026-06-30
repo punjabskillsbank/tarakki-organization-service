@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
+import org.springframework.http.HttpStatus;
 
 import java.util.UUID;
 
@@ -34,8 +35,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     private boolean isMemberExists(UUID memberId) {
         try {
             var statusCode = memberClient.getMemberById(memberId).getStatusCode();
-            return statusCode == org.springframework.http.HttpStatus.OK || 
-                   statusCode == org.springframework.http.HttpStatus.CREATED;
+            return statusCode == HttpStatus.OK || 
+                   statusCode == HttpStatus.CREATED;
         } catch (RestClientException exception) {
             return false;
         }

@@ -8,6 +8,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClient;
 import com.tarakki.organization.test_utils.factory.MemberTestDataFactory;
 import org.springframework.web.client.RestClientException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 import java.util.UUID;
 
@@ -51,12 +53,12 @@ public class MemberClientTest {
         String expectedBody = MemberTestDataFactory.createMemberResponseBody(memberId);
 
         stubRestClientChain(memberId);
-        when(responseSpec.toEntity(String.class)).thenReturn(org.springframework.http.ResponseEntity.ok(expectedBody));
+        when(responseSpec.toEntity(String.class)).thenReturn(ResponseEntity.ok(expectedBody));
 
-        org.springframework.http.ResponseEntity<String> result = memberClient.getMemberById(memberId);
+        ResponseEntity<String> result = memberClient.getMemberById(memberId);
 
         assertEquals(expectedBody, result.getBody());
-        assertEquals(org.springframework.http.HttpStatus.OK, result.getStatusCode());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
     @Test

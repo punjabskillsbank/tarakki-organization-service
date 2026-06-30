@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.client.RestClientException;
+import org.springframework.http.ResponseEntity;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -59,7 +60,7 @@ public class OrganizationServiceImplTest {
 
     @Test
     void createOrganization_shouldReturnSavedOrganizationDTO() {
-        when(memberClient.getMemberById(ownerId)).thenReturn(org.springframework.http.ResponseEntity.ok("member-data"));
+        when(memberClient.getMemberById(ownerId)).thenReturn(ResponseEntity.ok("member-data"));
         when(mapper.map(any(OrganizationDTO.class), eq(Organization.class)))
                 .thenReturn(organization);
         when(organizationRepository.save(any(Organization.class)))
