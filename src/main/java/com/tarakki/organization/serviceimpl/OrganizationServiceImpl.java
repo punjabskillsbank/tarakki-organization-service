@@ -33,7 +33,9 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private boolean isMemberExists(UUID memberId) {
         try {
-            return memberClient.getMemberById(memberId) != null;
+            var statusCode = memberClient.getMemberById(memberId).getStatusCode();
+            return statusCode == org.springframework.http.HttpStatus.OK || 
+                   statusCode == org.springframework.http.HttpStatus.CREATED;
         } catch (RestClientException exception) {
             return false;
         }

@@ -51,11 +51,12 @@ public class MemberClientTest {
         String expectedBody = MemberTestDataFactory.createMemberResponseBody(memberId);
 
         stubRestClientChain(memberId);
-        when(responseSpec.body(String.class)).thenReturn(expectedBody);
+        when(responseSpec.toEntity(String.class)).thenReturn(org.springframework.http.ResponseEntity.ok(expectedBody));
 
-        String result = memberClient.getMemberById(memberId);
+        org.springframework.http.ResponseEntity<String> result = memberClient.getMemberById(memberId);
 
-        assertEquals(expectedBody, result);
+        assertEquals(expectedBody, result.getBody());
+        assertEquals(org.springframework.http.HttpStatus.OK, result.getStatusCode());
     }
 
     @Test
@@ -63,7 +64,7 @@ public class MemberClientTest {
         UUID memberId = UUID.randomUUID();
 
         stubRestClientChain(memberId);
-        when(responseSpec.body(String.class))
+        when(responseSpec.toEntity(String.class))
                 .thenThrow(new RestClientException("404 Not Found"));
 
         assertThrows(RestClientException.class,

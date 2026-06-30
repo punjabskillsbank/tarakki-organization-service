@@ -1,6 +1,7 @@
 package com.tarakki.organization.client;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -12,10 +13,10 @@ public class MemberClient {
 
     private final RestClient restClient;
 
-    public String getMemberById(UUID memberId) {
+    public ResponseEntity<String> getMemberById(UUID memberId) {
         return restClient.get()
                 .uri("/api/members/{memberId}", memberId)
                 .retrieve()
-                .body(String.class);
+                .toEntity(String.class);
     }
 }

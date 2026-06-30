@@ -59,7 +59,7 @@ public class OrganizationServiceImplTest {
 
     @Test
     void createOrganization_shouldReturnSavedOrganizationDTO() {
-        when(memberClient.getMemberById(ownerId)).thenReturn("member-data");
+        when(memberClient.getMemberById(ownerId)).thenReturn(org.springframework.http.ResponseEntity.ok("member-data"));
         when(mapper.map(any(OrganizationDTO.class), eq(Organization.class)))
                 .thenReturn(organization);
         when(organizationRepository.save(any(Organization.class)))
