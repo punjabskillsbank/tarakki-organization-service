@@ -5,16 +5,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.client.RestClient;
-import com.tarakki.organization.test_utils.factory.MemberTestDataFactory;
-import org.springframework.web.client.RestClientException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -38,7 +36,7 @@ public class MemberClientTest {
 
     @BeforeEach
     void setup() {
-        memberClient = new MemberClient(restClient);
+        memberClient = new MemberClient(restClient, "/api/members");
     }
 
     private void stubRestClientChain(UUID memberId) {
@@ -48,28 +46,22 @@ public class MemberClientTest {
     }
 
     @Test
-    void getMemberById_shouldReturnResponseBodyWhenMemberExists() {
+    void doesMemberExist_shouldReturnTrueWhenMemberExists() {
         UUID memberId = UUID.randomUUID();
-        String expectedBody = MemberTestDataFactory.createMemberResponseBody(memberId);
 
         stubRestClientChain(memberId);
-        when(responseSpec.toEntity(String.class)).thenReturn(ResponseEntity.ok(expectedBody));
+        when(responseSpec.toBodilessEntity()).thenReturn(ResponseEntity.ok().build());
 
-        ResponseEntity<String> result = memberClient.getMemberById(memberId);
-
-        assertEquals(expectedBody, result.getBody());
-        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertTrue(memberClient.doesMemberExist(memberId));
     }
 
     @Test
-    void getMemberById_shouldPropagateRestClientExceptionWhenMemberNotFound() {
+    void doesMemberExist_shouldReturnFalseWhenMemberNotFound() {
         UUID memberId = UUID.randomUUID();
 
         stubRestClientChain(memberId);
-        when(responseSpec.toEntity(String.class))
-                .thenThrow(new RestClientException("404 Not Found"));
+        when(responseSpec.toBodilessEntity()).thenThrow(new RestClientException("404 Not Found"));
 
-        assertThrows(RestClientException.class,
-                () -> memberClient.getMemberById(memberId));
+        assertFalse(memberClient.doesMemberExist(memberId));
     }
 }

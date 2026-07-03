@@ -11,7 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.web.client.RestClient;
+import com.tarakki.organization.client.MemberClient;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +19,6 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,16 +32,7 @@ public class AdminOrganizationServiceImplTest {
         private ModelMapper mapper;
 
         @Mock
-        private RestClient restClient;
-
-        @Mock
-        private RestClient.RequestHeadersUriSpec<?> requestHeadersUriSpec;
-
-        @Mock
-        private RestClient.RequestHeadersSpec<?> requestHeadersSpec;
-
-        @Mock
-        private RestClient.ResponseSpec responseSpec;
+        private MemberClient memberClient;
 
         @InjectMocks
         private AdminOrganizationServiceImpl adminOrganizationService;
@@ -63,9 +53,7 @@ public class AdminOrganizationServiceImplTest {
 
                 organizationDetails = OrganizationTestDataFactory.createOrganizationDetails(orgId, ownerId, totalMemberCount);
 
-                doReturn(requestHeadersUriSpec).when(restClient).get();
-                doReturn(requestHeadersSpec).when(requestHeadersUriSpec).uri("/api/members/{memberId}", ownerId);
-                doReturn(responseSpec).when(requestHeadersSpec).retrieve();
+
         }
 
         @Test
@@ -93,10 +81,6 @@ public class AdminOrganizationServiceImplTest {
 
                 verify(mapper)
                                 .map(organizationDetails, AdminOrganizationDTO.class);
-                // verify(responseSpec).body(MemberDTO.class); // omitted
-                verify(restClient).get();
-                verify(requestHeadersUriSpec)
-                        .uri("/api/members/{memberId}", ownerId);
-                verify(requestHeadersSpec).retrieve();
+                verify(memberClient).getMemberById(ownerId);
         }
 }

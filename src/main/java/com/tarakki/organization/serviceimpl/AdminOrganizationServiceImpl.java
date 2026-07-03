@@ -2,13 +2,12 @@ package com.tarakki.organization.serviceimpl;
 
 import com.tarakki.common.dto.MemberDTO;
 import com.tarakki.organization.dto.AdminOrganizationDTO;
+import com.tarakki.organization.client.MemberClient;
 import com.tarakki.organization.repository.OrganizationRepository;
 import com.tarakki.organization.service.AdminOrganizationService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +21,7 @@ public class AdminOrganizationServiceImpl implements AdminOrganizationService {
 
     private final OrganizationRepository organizationRepository;
     private final ModelMapper mapper;
-    private final RestClient restClient;
+    private final MemberClient memberClient;
 
     @Override
     public List<AdminOrganizationDTO> getAllOrganizations() {
@@ -33,9 +32,8 @@ public class AdminOrganizationServiceImpl implements AdminOrganizationService {
                 .filter(Objects::nonNull)
                 .distinct()
                 .toList();
-
         Map<UUID, MemberDTO> membersMap = ownerIds.stream()
-                .map(this::fetchMember)
+                .map(memberClient::getMemberById)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toMap(MemberDTO::getMemberId, member -> member));
 
@@ -49,16 +47,5 @@ public class AdminOrganizationServiceImpl implements AdminOrganizationService {
                     return dto;
                 })
                 .toList();
-    }
-
-    private MemberDTO fetchMember(UUID memberId) {
-        try {
-            return restClient.get()
-                    .uri("/api/members/{memberId}", memberId)
-                    .retrieve()
-                    .body(MemberDTO.class);
-        } catch (RestClientException exception) {
-            return null;
-        }
     }
 }
