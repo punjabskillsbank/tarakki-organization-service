@@ -1,17 +1,23 @@
 package com.tarakki.organization.client;
 
+import com.tarakki.common.dto.MemberDTO;
+import com.tarakki.organization.test_utils.factory.AdminOrganizationTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -36,7 +42,8 @@ public class MemberClientTest {
 
     @BeforeEach
     void setup() {
-        memberClient = new MemberClient(restClient, "/api/members");
+        memberClient = new MemberClient(restClient);
+        ReflectionTestUtils.setField(memberClient, "memberApiEndpoint", "/api/members");
     }
 
     private void stubRestClientChain(UUID memberId) {
@@ -64,4 +71,29 @@ public class MemberClientTest {
 
         assertFalse(memberClient.doesMemberExist(memberId));
     }
+
+    @Test
+    void getMemberById_shouldReturnMemberDtoWhenSuccessful() {
+        UUID memberId = UUID.randomUUID();
+        MemberDTO expectedMember = AdminOrganizationTestDataFactory.createMemberDTO(memberId);
+
+        stubRestClientChain(memberId);
+        when(responseSpec.body(MemberDTO.class)).thenReturn(expectedMember);
+
+        MemberDTO result = memberClient.getMemberById(memberId);
+
+        assertNotNull(result);
+        assertEquals(expectedMember, result);
+    }
+
+    @Test
+    void getMemberById_shouldPropagateRestClientExceptionWhenError() {
+        UUID memberId = UUID.randomUUID();
+
+        stubRestClientChain(memberId);
+        when(responseSpec.body(MemberDTO.class)).thenThrow(new RestClientException("500 Internal Server Error"));
+
+        assertThrows(RestClientException.class, () -> memberClient.getMemberById(memberId));
+    }
 }
+

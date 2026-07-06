@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.UUID;
 
@@ -179,7 +180,7 @@ public class OrganizationControllerTest {
     void shouldReturnOrganizationById() throws Exception {
         when(organizationService.getOrganizationById(orgId, ownerId)).thenReturn(output);
 
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/organizations/{organizationId}", orgId)
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/organizations/{organizationId}", orgId)
                         .param("memberId", ownerId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.orgId").value(output.getOrgId()))

@@ -32,7 +32,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
 
-    protected OrganizationDTO saveOrganization(OrganizationDTO organizationRequest) {
+    private OrganizationDTO saveOrganization(OrganizationDTO organizationRequest) {
         Organization organization = mapper.map(organizationRequest, Organization.class);
         Organization savedOrganization = organizationRepository.save(organization);
         return mapper.map(savedOrganization, OrganizationDTO.class);

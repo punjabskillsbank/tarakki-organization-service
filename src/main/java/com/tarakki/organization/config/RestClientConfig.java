@@ -11,10 +11,14 @@ import java.time.Duration;
 @Configuration
 public class RestClientConfig {
 
+    @Value("${restclient.connect-timeout-ms}")
+    private int connectTimeout;
+
+    @Value("${restclient.read-timeout-ms}")
+    private int readTimeout;
+
     @Bean
-    public RestClient.Builder restClientBuilder(
-            @Value("${restclient.connect-timeout-ms:3000}") int connectTimeout,
-            @Value("${restclient.read-timeout-ms:5000}") int readTimeout) {
+    public RestClient.Builder restClientBuilder() {
         
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(Duration.ofMillis(connectTimeout));
