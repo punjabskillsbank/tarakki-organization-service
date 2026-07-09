@@ -1,0 +1,40 @@
+package com.tarakki.organization.dto;
+
+import com.tarakki.organization.enums.OrgMemberRole;
+import com.tarakki.organization.enums.Status;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@EqualsAndHashCode
+@Builder(toBuilder = true)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class OrgMemberDto {
+    private Long orgMemberId;
+
+    @NotNull(message = "OrgId must not be empty")
+    private Long orgId;
+
+    @NotNull(message = "MemberId Id must not be empty")
+    private UUID memberId;
+
+    @NotBlank(message = "email must not be empty")
+    @Email(message = "Please enter a valid email address")
+    private String email;
+
+    @NotNull(message = "Status must not be empty")
+    private Status status;
+
+    @NotNull(message = "OrgMemberRole must not be empty")
+    private OrgMemberRole orgMemberRole;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+}
