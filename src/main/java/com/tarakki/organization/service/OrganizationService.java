@@ -7,4 +7,5 @@ import java.util.UUID;
 public interface OrganizationService {
     OrganizationDTO createOrganization(OrganizationDTO organizationRequest);
     OrganizationDTO getOrganizationById(Long organizationId, UUID memberId);
+    boolean existsMemberInOrganization(Long organizationId, UUID memberId);
 }

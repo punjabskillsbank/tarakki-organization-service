@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -15,10 +14,8 @@ import org.springframework.web.client.RestClientException;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -52,25 +49,6 @@ public class MemberClientTest {
         doReturn(responseSpec).when(requestHeadersSpec).retrieve();
     }
 
-    @Test
-    void doesMemberExist_shouldReturnTrueWhenMemberExists() {
-        UUID memberId = UUID.randomUUID();
-
-        stubRestClientChain(memberId);
-        when(responseSpec.toBodilessEntity()).thenReturn(ResponseEntity.ok().build());
-
-        assertTrue(memberClient.doesMemberExist(memberId));
-    }
-
-    @Test
-    void doesMemberExist_shouldReturnFalseWhenMemberNotFound() {
-        UUID memberId = UUID.randomUUID();
-
-        stubRestClientChain(memberId);
-        when(responseSpec.toBodilessEntity()).thenThrow(new RestClientException("404 Not Found"));
-
-        assertFalse(memberClient.doesMemberExist(memberId));
-    }
 
     @Test
     void getMemberById_shouldReturnMemberDtoWhenSuccessful() {

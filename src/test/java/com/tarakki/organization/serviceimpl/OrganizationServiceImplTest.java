@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import com.tarakki.organization.exceptionhandling.MemberNotInOrganizationException;
+import com.tarakki.common.dto.MemberDTO;
+import org.springframework.web.client.RestClientException;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -21,6 +23,8 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -60,7 +64,7 @@ public class OrganizationServiceImplTest {
 
     @Test
     void createOrganization_shouldReturnSavedOrganizationDTO() {
-        when(memberClient.doesMemberExist(ownerId)).thenReturn(true);
+        when(memberClient.getMemberById(ownerId)).thenReturn(new MemberDTO());
         when(mapper.map(any(OrganizationDTO.class), eq(Organization.class)))
                 .thenReturn(organization);
         when(organizationRepository.save(any(Organization.class)))
@@ -81,7 +85,7 @@ public class OrganizationServiceImplTest {
         assertEquals(dto.getOrgState(), result.getOrgState());
         assertEquals(dto.getOrgCountry(), result.getOrgCountry());
 
-        verify(memberClient).doesMemberExist(ownerId);
+        verify(memberClient).getMemberById(ownerId);
         verify(mapper).map(any(OrganizationDTO.class), eq(Organization.class));
         verify(organizationRepository).save(any(Organization.class));
         verify(mapper).map(any(Organization.class), eq(OrganizationDTO.class));
@@ -89,13 +93,13 @@ public class OrganizationServiceImplTest {
 
     @Test
     void createOrganization_shouldThrowOwnerIdNotFoundExceptionWhenOwnerIdIsMissing() {
-        when(memberClient.doesMemberExist(ownerId)).thenReturn(false);
+        when(memberClient.getMemberById(ownerId)).thenThrow(new RestClientException("Member not found"));
 
         OwnerIdNotFoundException exception = assertThrows(OwnerIdNotFoundException.class,
                 () -> organizationService.createOrganization(dto));
 
         assertEquals("owner not found at given ownerId: " + ownerId, exception.getMessage());
-        verify(memberClient).doesMemberExist(ownerId);
+        verify(memberClient).getMemberById(ownerId);
     }
 
     @Test
@@ -136,6 +140,26 @@ public class OrganizationServiceImplTest {
 
         assertEquals("Member " + ownerId + " does not belong to organization " + orgId, exception.getMessage());
         verify(organizationRepository).findById(orgId);
+        verify(organizationRepository).existsMemberInOrganization(orgId, ownerId);
+    }
+
+    @Test
+    void existsMemberInOrganization_shouldReturnTrueWhenMemberExists() {
+        when(organizationRepository.existsMemberInOrganization(orgId, ownerId)).thenReturn(true);
+
+        boolean result = organizationService.existsMemberInOrganization(orgId, ownerId);
+
+        assertTrue(result);
+        verify(organizationRepository).existsMemberInOrganization(orgId, ownerId);
+    }
+
+    @Test
+    void existsMemberInOrganization_shouldReturnFalseWhenMemberDoesNotExist() {
+        when(organizationRepository.existsMemberInOrganization(orgId, ownerId)).thenReturn(false);
+
+        boolean result = organizationService.existsMemberInOrganization(orgId, ownerId);
+
+        assertFalse(result);
         verify(organizationRepository).existsMemberInOrganization(orgId, ownerId);
     }
 }

@@ -36,4 +36,12 @@ public class OrganizationController {
         OrganizationDTO organizationDTO = organizationService.getOrganizationById(organizationId, memberId);
         return new ResponseEntity<>(organizationDTO, HttpStatus.OK);
     }
+
+    @GetMapping("/{organizationId}/members/{memberId}/exists")
+    public ResponseEntity<Boolean> existsMemberInOrganization(
+            @PathVariable Long organizationId,
+            @PathVariable UUID memberId) {
+        boolean exists = organizationService.existsMemberInOrganization(organizationId, memberId);
+        return new ResponseEntity<>(exists, HttpStatus.OK);
+    }
 }

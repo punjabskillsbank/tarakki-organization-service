@@ -11,6 +11,7 @@ import com.tarakki.organization.service.OrganizationService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 
 
 import java.util.UUID;
@@ -25,7 +26,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public OrganizationDTO createOrganization(OrganizationDTO organizationRequest) {
         UUID ownerId = organizationRequest.getOwnerId();
-        if (!memberClient.doesMemberExist(ownerId)) {
+        try {
+            memberClient.getMemberById(ownerId);
+        } catch (RestClientException e) {
             throw new OwnerIdNotFoundException(ownerId);
         }
         return saveOrganization(organizationRequest);
@@ -46,5 +49,10 @@ public class OrganizationServiceImpl implements OrganizationService {
             throw new MemberNotInOrganizationException(memberId, organizationId);
         }
         return mapper.map(organization, OrganizationDTO.class);
+    }
+
+    @Override
+    public boolean existsMemberInOrganization(Long organizationId, UUID memberId) {
+        return organizationRepository.existsMemberInOrganization(organizationId, memberId);
     }
 }

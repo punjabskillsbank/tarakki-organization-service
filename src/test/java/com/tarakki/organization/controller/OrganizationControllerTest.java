@@ -208,4 +208,22 @@ public class OrganizationControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string("Member " + ownerId + " does not belong to organization " + orgId));
     }
+
+    @Test
+    void shouldReturnTrueWhenMemberExistsInOrganization() throws Exception {
+        when(organizationService.existsMemberInOrganization(orgId, ownerId)).thenReturn(true);
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/organizations/{organizationId}/members/{memberId}/exists", orgId, ownerId))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("true"));
+    }
+
+    @Test
+    void shouldReturnFalseWhenMemberDoesNotExistInOrganization() throws Exception {
+        when(organizationService.existsMemberInOrganization(orgId, ownerId)).thenReturn(false);
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/organizations/{organizationId}/members/{memberId}/exists", orgId, ownerId))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("false"));
+    }
 }
