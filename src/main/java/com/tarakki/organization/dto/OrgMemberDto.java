@@ -27,7 +27,6 @@ public class OrgMemberDto {
     @Email(message = "Please enter a valid email address")
     private String email;
 
-    @NotNull(message = "Status must not be empty")
     private Status status;
 
     @NotNull(message = "OrgMemberRole must not be empty")

@@ -85,18 +85,6 @@ public class OrgMemberControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-
-    @Test
-    void shouldReturnBadRequestWhenStatusIsMissing() throws Exception {
-
-        dto.setStatus(null);
-
-        mockMvc.perform(post("/api/orgMember/{orgId}", orgId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isBadRequest());
-    }
-
     @Test
     void shouldReturnBadRequestWhenOrgMemberRoleIsMissing() throws Exception {
 
