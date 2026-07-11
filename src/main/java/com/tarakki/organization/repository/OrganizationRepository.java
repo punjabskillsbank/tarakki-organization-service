@@ -3,9 +3,11 @@ package com.tarakki.organization.repository;
 import com.tarakki.common.entity.Organization;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public interface OrganizationRepository extends JpaRepository<Organization, Long> {
     @Query(value = """
@@ -39,4 +41,12 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
             ORDER BY o.org_id
             """, nativeQuery = true)
     List<Map<String, Object>> findAllOrganizationsWithOwnerAndMemberCount();
+
+    @Query(value = """
+            SELECT COUNT(*) > 0
+            FROM org_members
+            WHERE org_id = :orgId
+              AND member_id = :memberId
+            """, nativeQuery = true)
+    boolean existsMemberInOrganization(@Param("orgId") Long orgId, @Param("memberId") UUID memberId);
 }

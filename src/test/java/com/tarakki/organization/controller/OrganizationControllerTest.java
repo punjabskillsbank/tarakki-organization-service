@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.UUID;
 
@@ -175,4 +176,54 @@ public class OrganizationControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void shouldReturnOrganizationById() throws Exception {
+        when(organizationService.getOrganizationById(orgId, ownerId)).thenReturn(output);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/organizations/{organizationId}", orgId)
+                        .param("memberId", ownerId.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.orgId").value(output.getOrgId()))
+                .andExpect(jsonPath("$.orgName").value(output.getOrgName()));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenOrganizationIsNotFound() throws Exception {
+        when(organizationService.getOrganizationById(orgId, ownerId))
+                .thenThrow(new com.tarakki.organization.exceptionhandling.OrganizationNotFoundException(orgId));
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/organizations/{organizationId}", orgId)
+                        .param("memberId", ownerId.toString()))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().string("Organization with ID " + orgId + " not found"));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenMemberIsNotInOrganization() throws Exception {
+        when(organizationService.getOrganizationById(orgId, ownerId))
+                .thenThrow(new com.tarakki.organization.exceptionhandling.MemberNotInOrganizationException(ownerId, orgId));
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/organizations/{organizationId}", orgId)
+                        .param("memberId", ownerId.toString()))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().string("Member " + ownerId + " does not belong to organization " + orgId));
+    }
+
+    @Test
+    void shouldReturnTrueWhenMemberExistsInOrganization() throws Exception {
+        when(organizationService.existsMemberInOrganization(orgId, ownerId)).thenReturn(true);
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/organizations/{organizationId}/members/{memberId}/exists", orgId, ownerId))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("true"));
+    }
+
+    @Test
+    void shouldReturnFalseWhenMemberDoesNotExistInOrganization() throws Exception {
+        when(organizationService.existsMemberInOrganization(orgId, ownerId)).thenReturn(false);
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/organizations/{organizationId}/members/{memberId}/exists", orgId, ownerId))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("false"));
+    }
 }
