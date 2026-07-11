@@ -61,7 +61,7 @@ public class OrgMemberControllerTest {
     }
 
     @Test
-    void shouldReturnNotFoundWhenOrgIdIsNotFound() throws Exception {
+    void shouldReturnNotFoundExceptionWhenOrgIdIsNotFound() throws Exception {
 
         when(orgMemberService.addOrgMemberInfo(any(OrgMemberDto.class), eq(orgId)))
                 .thenThrow(new OrganizationNotFoundException(orgId));
@@ -72,17 +72,6 @@ public class OrgMemberControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string(
                         "Organization with id " + orgId + " not found"));
-    }
-
-    @Test
-    void shouldReturnBadRequestWhenMemberIdIdIsMissing() throws Exception {
-
-        dto.setMemberId(null);
-
-        mockMvc.perform(post("/api/orgMember/{orgId}", orgId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isBadRequest());
     }
 
     @Test

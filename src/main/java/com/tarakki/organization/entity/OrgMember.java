@@ -33,7 +33,7 @@ public class OrgMember {
     @Column(name = "org_id", nullable = false)
     private Long orgId;
 
-    @Column(name = "member_id", nullable = false)
+    @Column(name = "member_id")
     private UUID memberId;
 
     @Column(name = "email", nullable = false)
@@ -42,7 +42,7 @@ public class OrgMember {
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "status", columnDefinition = "status_enum")
-    private Status status;
+    private Status status = Status.PENDING;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)

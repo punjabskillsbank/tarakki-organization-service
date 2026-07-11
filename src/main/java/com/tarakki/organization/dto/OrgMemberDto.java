@@ -21,7 +21,6 @@ public class OrgMemberDto {
     @NotNull(message = "OrgId must not be empty")
     private Long orgId;
 
-    @NotNull(message = "MemberId Id must not be empty")
     private UUID memberId;
 
     @NotBlank(message = "email must not be empty")

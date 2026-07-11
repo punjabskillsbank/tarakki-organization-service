@@ -19,9 +19,9 @@ public class OrgMemberController {
     public ResponseEntity<OrgMemberDto> addOrgMemberInfo(@Valid @RequestBody OrgMemberDto orgMemberDto,
                                                             @PathVariable Long orgId) {
 
-        OrgMemberDto orgMemberDto1 = orgMemberService.addOrgMemberInfo(orgMemberDto,orgId);
+        OrgMemberDto response = orgMemberService.addOrgMemberInfo(orgMemberDto,orgId);
 
-        return new ResponseEntity<>(orgMemberDto1, HttpStatus.CREATED);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
 
     }
 }
