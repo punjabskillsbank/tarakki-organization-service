@@ -93,7 +93,7 @@ public class OrgMemberServiceTest {
         OrganizationNotFoundException exception = assertThrows(OrganizationNotFoundException.class,
                 () -> orgMemberService.addOrgMemberInfo(orgMemberDto, orgMember.getOrgId()));
 
-        assertEquals("Organization with id " + orgMember.getOrgId() + " not found", exception.getMessage());
+        assertEquals("Organization with ID " + orgMember.getOrgId() + " not found", exception.getMessage());
 
         verify(organizationRepository).findById(orgMember.getOrgId());
     }

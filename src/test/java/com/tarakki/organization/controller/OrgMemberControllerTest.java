@@ -71,7 +71,7 @@ public class OrgMemberControllerTest {
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string(
-                        "Organization with id " + orgId + " not found"));
+                        "Organization with ID " + orgId + " not found"));
     }
 
     @Test
