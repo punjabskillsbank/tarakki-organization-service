@@ -26,7 +26,7 @@ public class OrgMemberServiceImpl implements OrgMemberService {
     public OrgMemberDto addOrgMemberInfo(OrgMemberDto orgMemberDto, Long orgId) {
 
         Organization organization = organizationRepository.findById(orgId)
-                .orElseThrow(()->new OrganizationNotFoundException(orgId));
+                .orElseThrow(() -> new OrganizationNotFoundException(orgId));
 
         OrgMember orgMember = modelMapper.map(orgMemberDto, OrgMember.class);
 
@@ -35,6 +35,6 @@ public class OrgMemberServiceImpl implements OrgMemberService {
         }
         OrgMember savedOrgMember = orgMemberRepository.save(orgMember);
 
-        return modelMapper.map(savedOrgMember,OrgMemberDto.class);
+        return modelMapper.map(savedOrgMember, OrgMemberDto.class);
     }
 }

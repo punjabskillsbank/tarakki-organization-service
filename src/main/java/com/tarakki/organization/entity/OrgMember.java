@@ -42,7 +42,7 @@ public class OrgMember {
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "status", columnDefinition = "status_enum")
-    private Status status = Status.PENDING;
+    private Status status;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
