@@ -56,7 +56,7 @@ public class OrgMemberControllerTest {
                 .andExpect(jsonPath("$.orgId").value(dto.getOrgId()))
                 .andExpect(jsonPath("$.memberId").value(dto.getMemberId().toString()))
                 .andExpect(jsonPath("$.email").value(dto.getEmail()))
-                .andExpect(jsonPath("$.status").value(dto.getStatus().toString()))
+                .andExpect(jsonPath("$.memberAccountStatus").value(dto.getMemberAccountStatus().toString()))
                 .andExpect(jsonPath("$.orgMemberRole").value(dto.getOrgMemberRole().toString()));
     }
 

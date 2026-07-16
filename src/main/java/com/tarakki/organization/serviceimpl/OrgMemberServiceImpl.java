@@ -3,7 +3,7 @@ package com.tarakki.organization.serviceimpl;
 import com.tarakki.common.entity.Organization;
 import com.tarakki.organization.dto.OrgMemberDto;
 import com.tarakki.organization.entity.OrgMember;
-import com.tarakki.organization.enums.Status;
+import com.tarakki.organization.enums.MemberAccountStatus;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
 import com.tarakki.organization.repository.OrgMemberRepository;
 import com.tarakki.organization.repository.OrganizationRepository;
@@ -30,8 +30,8 @@ public class OrgMemberServiceImpl implements OrgMemberService {
 
         OrgMember orgMember = modelMapper.map(orgMemberDto, OrgMember.class);
 
-        if(orgMember.getStatus() == null){
-        orgMember.setStatus(Status.PENDING);
+        if (orgMember.getMemberAccountStatus() == null) {
+            orgMember.setMemberAccountStatus(MemberAccountStatus.PENDING);
         }
         OrgMember savedOrgMember = orgMemberRepository.save(orgMember);
 

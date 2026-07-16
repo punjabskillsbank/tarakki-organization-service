@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static com.tarakki.organization.enums.OrgMemberRole.ORG_ADMIN;
-import static com.tarakki.organization.enums.Status.ACCEPTED;
+import static com.tarakki.organization.enums.MemberAccountStatus.ACCEPTED;
 
 public class OrgMemberTestDataFactory {
 
@@ -16,7 +16,7 @@ public class OrgMemberTestDataFactory {
                 .orgId(9L)
                 .memberId(UUID.randomUUID())
                 .email("myEmail@gamil.com")
-                .status(ACCEPTED)
+                .memberAccountStatus(ACCEPTED)
                 .orgMemberRole(ORG_ADMIN)
                 .build();
     }
@@ -27,7 +27,7 @@ public class OrgMemberTestDataFactory {
                 .orgId(9L)
                 .memberId(UUID.randomUUID())
                 .email("myEmail@gamil.com")
-                .status(ACCEPTED)
+                .memberAccountStatus(ACCEPTED)
                 .orgMemberRole(ORG_ADMIN)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())

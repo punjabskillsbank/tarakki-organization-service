@@ -76,7 +76,7 @@ public class OrgMemberServiceTest {
         assertEquals(orgMemberDto.getOrgId(), result.getOrgId());
         assertEquals(orgMemberDto.getMemberId(), result.getMemberId());
         assertEquals(orgMemberDto.getEmail(), result.getEmail());
-        assertEquals(orgMemberDto.getStatus(), result.getStatus());
+        assertEquals(orgMemberDto.getMemberAccountStatus(), result.getMemberAccountStatus());
         assertEquals(orgMemberDto.getOrgMemberRole(), result.getOrgMemberRole());
 
         verify(organizationRepository).findById(orgMemberDto.getOrgId());

@@ -1,7 +1,7 @@
 package com.tarakki.organization.dto;
 
 import com.tarakki.organization.enums.OrgMemberRole;
-import com.tarakki.organization.enums.Status;
+import com.tarakki.organization.enums.MemberAccountStatus;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -27,7 +27,7 @@ public class OrgMemberDto {
     @Email(message = "Please enter a valid email address")
     private String email;
 
-    private Status status;
+    private MemberAccountStatus memberAccountStatus;
 
     @NotNull(message = "OrgMemberRole must not be empty")
     private OrgMemberRole orgMemberRole;

@@ -1,6 +1,6 @@
 package com.tarakki.organization.enums;
 
-public enum Status {
+public enum MemberAccountStatus {
 
     ACCEPTED,
     REJECTED,

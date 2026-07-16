@@ -1,7 +1,7 @@
 package com.tarakki.organization.entity;
 
 import com.tarakki.organization.enums.OrgMemberRole;
-import com.tarakki.organization.enums.Status;
+import com.tarakki.organization.enums.MemberAccountStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,7 +42,7 @@ public class OrgMember {
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "status", columnDefinition = "status_enum")
-    private Status status;
+    private MemberAccountStatus memberAccountStatus;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
