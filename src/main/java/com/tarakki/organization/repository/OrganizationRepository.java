@@ -43,10 +43,11 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
     List<Map<String, Object>> findAllOrganizationsWithOwnerAndMemberCount();
 
     @Query(value = """
-            SELECT COUNT(*) > 0
-            FROM org_members
-            WHERE org_id = :orgId
-              AND member_id = :memberId
+            SELECT EXISTS (
+                SELECT 1 FROM organizations WHERE org_id = :orgId AND owner_id = :memberId
+                UNION ALL
+                SELECT 1 FROM org_members WHERE org_id = :orgId AND member_id = :memberId
+            )
             """, nativeQuery = true)
     boolean existsMemberInOrganization(@Param("orgId") Long orgId, @Param("memberId") UUID memberId);
 }
