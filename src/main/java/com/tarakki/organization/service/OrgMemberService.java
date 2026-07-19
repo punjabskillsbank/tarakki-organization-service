@@ -1,7 +1,7 @@
 package com.tarakki.organization.service;
 
-import com.tarakki.organization.dto.OrgMemberDto;
+import com.tarakki.common.dto.OrgMemberDTO;
 
 public interface OrgMemberService {
-    OrgMemberDto addOrgMemberInfo(OrgMemberDto orgMemberDto, Long OrgId);
+    OrgMemberDTO addOrgMemberInfo(OrgMemberDTO orgMemberDto, Long OrgId);
 }

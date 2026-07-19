@@ -1,8 +1,8 @@
 package com.tarakki.organization.serviceimpl;
 
+import com.tarakki.common.dto.OrgMemberDTO;
 import com.tarakki.common.entity.Organization;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
-import com.tarakki.organization.dto.OrgMemberDto;
 import com.tarakki.organization.entity.OrgMember;
 import com.tarakki.organization.repository.OrgMemberRepository;
 import com.tarakki.organization.repository.OrganizationRepository;
@@ -42,7 +42,7 @@ public class OrgMemberServiceTest {
     private OrganizationRepository organizationRepository;
 
     private OrgMember orgMember;
-    private OrgMemberDto orgMemberDto;
+    private OrgMemberDTO orgMemberDto;
     private Organization organization;
 
     @BeforeEach
@@ -61,16 +61,16 @@ public class OrgMemberServiceTest {
         when(organizationRepository.findById(orgMemberDto.getOrgId()))
                 .thenReturn(Optional.of(organization));
 
-        when(mapper.map(any(OrgMemberDto.class), eq(OrgMember.class)))
+        when(mapper.map(any(OrgMemberDTO.class), eq(OrgMember.class)))
                 .thenReturn(orgMember);
 
         when(orgMemberRepository.save(any(OrgMember.class)))
                 .thenReturn(orgMember);
 
-        when(mapper.map(any(OrgMember.class), eq(OrgMemberDto.class)))
+        when(mapper.map(any(OrgMember.class), eq(OrgMemberDTO.class)))
                 .thenReturn(orgMemberDto);
 
-        OrgMemberDto result = orgMemberService.addOrgMemberInfo(orgMemberDto, orgMemberDto.getOrgId());
+        OrgMemberDTO result = orgMemberService.addOrgMemberInfo(orgMemberDto, orgMemberDto.getOrgId());
 
         assertNotNull(result);
         assertEquals(orgMemberDto.getOrgId(), result.getOrgId());
@@ -80,9 +80,9 @@ public class OrgMemberServiceTest {
         assertEquals(orgMemberDto.getOrgMemberRole(), result.getOrgMemberRole());
 
         verify(organizationRepository).findById(orgMemberDto.getOrgId());
-        verify(mapper).map(any(OrgMemberDto.class), eq(OrgMember.class));
+        verify(mapper).map(any(OrgMemberDTO.class), eq(OrgMember.class));
         verify(orgMemberRepository).save(any(OrgMember.class));
-        verify(mapper).map(any(OrgMember.class), eq(OrgMemberDto.class));
+        verify(mapper).map(any(OrgMember.class), eq(OrgMemberDTO.class));
     }
 
     @Test

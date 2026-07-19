@@ -1,8 +1,8 @@
 package com.tarakki.organization.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tarakki.common.dto.OrgMemberDTO;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
-import com.tarakki.organization.dto.OrgMemberDto;
 import com.tarakki.organization.exceptionhandling.GlobalExceptionHandler;
 import com.tarakki.organization.service.OrgMemberService;
 import com.tarakki.organization.test_utils.factory.OrgMemberTestDataFactory;
@@ -35,7 +35,7 @@ public class OrgMemberControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private OrgMemberDto dto;
+    private OrgMemberDTO dto;
     private Long orgId;
 
     @BeforeEach
@@ -46,7 +46,7 @@ public class OrgMemberControllerTest {
 
     @Test
     void shouldCreateOrgMember() throws Exception {
-        when(orgMemberService.addOrgMemberInfo(any(OrgMemberDto.class), eq(orgId)))
+        when(orgMemberService.addOrgMemberInfo(any(OrgMemberDTO.class), eq(orgId)))
                 .thenReturn(dto);
 
         mockMvc.perform(post("/api/orgMember/{orgId}", orgId)
@@ -63,7 +63,7 @@ public class OrgMemberControllerTest {
     @Test
     void shouldReturnNotFoundExceptionWhenOrgIdIsNotFound() throws Exception {
 
-        when(orgMemberService.addOrgMemberInfo(any(OrgMemberDto.class), eq(orgId)))
+        when(orgMemberService.addOrgMemberInfo(any(OrgMemberDTO.class), eq(orgId)))
                 .thenThrow(new OrganizationNotFoundException(orgId));
 
         mockMvc.perform(post("/api/orgMember/{orgId}", orgId)

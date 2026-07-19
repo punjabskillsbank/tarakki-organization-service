@@ -1,9 +1,9 @@
 package com.tarakki.organization.serviceimpl;
 
+import com.tarakki.common.dto.OrgMemberDTO;
 import com.tarakki.common.entity.Organization;
-import com.tarakki.organization.dto.OrgMemberDto;
+import com.tarakki.common.enums.MemberAccountStatus;
 import com.tarakki.organization.entity.OrgMember;
-import com.tarakki.organization.enums.MemberAccountStatus;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
 import com.tarakki.organization.repository.OrgMemberRepository;
 import com.tarakki.organization.repository.OrganizationRepository;
@@ -23,7 +23,7 @@ public class OrgMemberServiceImpl implements OrgMemberService {
 
     @Override
     @Transactional
-    public OrgMemberDto addOrgMemberInfo(OrgMemberDto orgMemberDto, Long orgId) {
+    public OrgMemberDTO addOrgMemberInfo(OrgMemberDTO orgMemberDto, Long orgId) {
 
         Organization organization = organizationRepository.findById(orgId)
                 .orElseThrow(() -> new OrganizationNotFoundException(orgId));
@@ -35,6 +35,6 @@ public class OrgMemberServiceImpl implements OrgMemberService {
         }
         OrgMember savedOrgMember = orgMemberRepository.save(orgMember);
 
-        return modelMapper.map(savedOrgMember, OrgMemberDto.class);
+        return modelMapper.map(savedOrgMember, OrgMemberDTO.class);
     }
 }

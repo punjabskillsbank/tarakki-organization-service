@@ -1,7 +1,7 @@
 package com.tarakki.organization.entity;
 
-import com.tarakki.organization.enums.OrgMemberRole;
-import com.tarakki.organization.enums.MemberAccountStatus;
+import com.tarakki.common.enums.MemberAccountStatus;
+import com.tarakki.common.enums.OrgMemberRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
