@@ -23,7 +23,7 @@ public class OrgMemberServiceImpl implements OrgMemberService {
 
     @Override
     @Transactional
-    public OrgMemberDTO addOrgMemberInfo(OrgMemberDTO orgMemberDto, Long orgId) {
+    public OrgMemberDTO addMemberToOrg(OrgMemberDTO orgMemberDto, Long orgId) {
 
         Organization organization = organizationRepository.findById(orgId)
                 .orElseThrow(() -> new OrganizationNotFoundException(orgId));

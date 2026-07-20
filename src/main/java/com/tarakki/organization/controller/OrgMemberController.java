@@ -9,17 +9,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/orgMember")
+@RequestMapping("/api/organizations/{orgId}/members")
 @RequiredArgsConstructor
 public class OrgMemberController {
 
     private final OrgMemberService orgMemberService;
 
-    @PostMapping("/{orgId}")
-    public ResponseEntity<OrgMemberDTO> addOrgMemberInfo(@Valid @RequestBody OrgMemberDTO orgMemberDto,
+    @PostMapping
+    public ResponseEntity<OrgMemberDTO>  addMemberToOrg(@Valid @RequestBody OrgMemberDTO orgMemberDto,
                                                          @PathVariable Long orgId) {
 
-        OrgMemberDTO response = orgMemberService.addOrgMemberInfo(orgMemberDto,orgId);
+        OrgMemberDTO response = orgMemberService. addMemberToOrg(orgMemberDto,orgId);
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
 

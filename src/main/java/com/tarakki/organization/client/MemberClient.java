@@ -22,9 +22,8 @@ public class MemberClient {
     private String baseUrl;
 
     public MemberDTO getMemberById(UUID memberId) {
-        System.out.println(memberApiEndpoint + "/" + memberId);
         return restClient.get()
-                .uri(baseUrl+memberApiEndpoint + "/{memberId}", memberId)
+                .uri(baseUrl + memberApiEndpoint + "/{memberId}", memberId)
                 .retrieve()
                 .body(MemberDTO.class);
     }

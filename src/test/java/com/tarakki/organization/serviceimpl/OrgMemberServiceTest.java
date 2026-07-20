@@ -70,7 +70,7 @@ public class OrgMemberServiceTest {
         when(mapper.map(any(OrgMember.class), eq(OrgMemberDTO.class)))
                 .thenReturn(orgMemberDto);
 
-        OrgMemberDTO result = orgMemberService.addOrgMemberInfo(orgMemberDto, orgMemberDto.getOrgId());
+        OrgMemberDTO result = orgMemberService.addMemberToOrg(orgMemberDto, orgMemberDto.getOrgId());
 
         assertNotNull(result);
         assertEquals(orgMemberDto.getOrgId(), result.getOrgId());
@@ -91,7 +91,7 @@ public class OrgMemberServiceTest {
                 .thenReturn(Optional.empty());
 
         OrganizationNotFoundException exception = assertThrows(OrganizationNotFoundException.class,
-                () -> orgMemberService.addOrgMemberInfo(orgMemberDto, orgMember.getOrgId()));
+                () -> orgMemberService.addMemberToOrg(orgMemberDto, orgMember.getOrgId()));
 
         assertEquals("Organization with ID " + orgMember.getOrgId() + " not found", exception.getMessage());
 

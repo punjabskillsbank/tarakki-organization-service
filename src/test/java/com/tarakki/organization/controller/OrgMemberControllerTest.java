@@ -46,10 +46,10 @@ public class OrgMemberControllerTest {
 
     @Test
     void shouldCreateOrgMember() throws Exception {
-        when(orgMemberService.addOrgMemberInfo(any(OrgMemberDTO.class), eq(orgId)))
+        when(orgMemberService.addMemberToOrg(any(OrgMemberDTO.class), eq(orgId)))
                 .thenReturn(dto);
 
-        mockMvc.perform(post("/api/orgMember/{orgId}", orgId)
+        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated())
@@ -63,10 +63,10 @@ public class OrgMemberControllerTest {
     @Test
     void shouldReturnNotFoundExceptionWhenOrgIdIsNotFound() throws Exception {
 
-        when(orgMemberService.addOrgMemberInfo(any(OrgMemberDTO.class), eq(orgId)))
+        when(orgMemberService.addMemberToOrg(any(OrgMemberDTO.class), eq(orgId)))
                 .thenThrow(new OrganizationNotFoundException(orgId));
 
-        mockMvc.perform(post("/api/orgMember/{orgId}", orgId)
+        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isNotFound())
@@ -79,7 +79,7 @@ public class OrgMemberControllerTest {
 
         dto.setEmail(null);
 
-        mockMvc.perform(post("/api/orgMember/{orgId}", orgId)
+        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
@@ -90,7 +90,7 @@ public class OrgMemberControllerTest {
 
         dto.setOrgMemberRole(null);
 
-        mockMvc.perform(post("/api/orgMember/{orgId}", orgId)
+        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
