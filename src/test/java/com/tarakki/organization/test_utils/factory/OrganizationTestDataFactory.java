@@ -83,6 +83,7 @@ public class OrganizationTestDataFactory {
                 .build();
     }
 
+
     public static MemberDTO createMemberDTO(UUID memberId, String email) {
         MemberDTO member = new MemberDTO();
         member.setMemberId(memberId);
