@@ -1,7 +1,7 @@
 package com.tarakki.organization.serviceimpl;
 
-import com.tarakki.common.dto.OrgMemberDTO;
 import com.tarakki.common.entity.Organization;
+import com.tarakki.organization.dto.OrgMemberDTO;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
 import com.tarakki.organization.entity.OrgMember;
 import com.tarakki.organization.repository.OrgMemberRepository;

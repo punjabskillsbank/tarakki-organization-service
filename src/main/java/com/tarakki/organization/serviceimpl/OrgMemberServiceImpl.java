@@ -1,9 +1,9 @@
 package com.tarakki.organization.serviceimpl;
 
-import com.tarakki.common.dto.OrgMemberDTO;
 import com.tarakki.common.entity.Organization;
-import com.tarakki.common.enums.MemberAccountStatus;
+import com.tarakki.organization.dto.OrgMemberDTO;
 import com.tarakki.organization.entity.OrgMember;
+import com.tarakki.organization.enums.MemberAccountStatus;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
 import com.tarakki.organization.repository.OrgMemberRepository;
 import com.tarakki.organization.repository.OrganizationRepository;

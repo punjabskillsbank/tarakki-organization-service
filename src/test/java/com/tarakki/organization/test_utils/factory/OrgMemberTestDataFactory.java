@@ -1,13 +1,13 @@
 package com.tarakki.organization.test_utils.factory;
 
-import com.tarakki.common.dto.OrgMemberDTO;
+import com.tarakki.organization.dto.OrgMemberDTO;
 import com.tarakki.organization.entity.OrgMember;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static com.tarakki.common.enums.MemberAccountStatus.ACCEPTED;
-import static com.tarakki.common.enums.OrgMemberRole.ORG_ADMIN;
+import static com.tarakki.organization.enums.MemberAccountStatus.ACCEPTED;
+import static com.tarakki.organization.enums.OrgMemberRole.ORG_ADMIN;
 
 
 public class OrgMemberTestDataFactory {

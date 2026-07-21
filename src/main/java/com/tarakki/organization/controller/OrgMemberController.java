@@ -1,6 +1,7 @@
 package com.tarakki.organization.controller;
 
-import com.tarakki.common.dto.OrgMemberDTO;
+
+import com.tarakki.organization.dto.OrgMemberDTO;
 import com.tarakki.organization.service.OrgMemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +17,10 @@ public class OrgMemberController {
     private final OrgMemberService orgMemberService;
 
     @PostMapping
-    public ResponseEntity<OrgMemberDTO>  addMemberToOrg(@Valid @RequestBody OrgMemberDTO orgMemberDto,
-                                                         @PathVariable Long orgId) {
+    public ResponseEntity<OrgMemberDTO> addMemberToOrg(@Valid @RequestBody OrgMemberDTO orgMemberDto,
+                                                       @PathVariable Long orgId) {
 
-        OrgMemberDTO response = orgMemberService. addMemberToOrg(orgMemberDto,orgId);
+        OrgMemberDTO response = orgMemberService.addMemberToOrg(orgMemberDto, orgId);
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
 

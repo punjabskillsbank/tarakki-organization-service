@@ -1,7 +1,7 @@
 package com.tarakki.organization.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tarakki.common.dto.OrgMemberDTO;
+import com.tarakki.organization.dto.OrgMemberDTO;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
 import com.tarakki.organization.exceptionhandling.GlobalExceptionHandler;
 import com.tarakki.organization.service.OrgMemberService;
