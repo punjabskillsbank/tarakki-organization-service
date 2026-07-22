@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -37,6 +38,10 @@ public class MemberClientTest {
 
     private MemberClient memberClient;
 
+
+    @Value("${base-url}")
+    private String baseUrl;
+
     @BeforeEach
     void setup() {
         memberClient = new MemberClient(restClient);
@@ -45,7 +50,7 @@ public class MemberClientTest {
 
     private void stubRestClientChain(UUID memberId) {
         doReturn(requestHeadersUriSpec).when(restClient).get();
-        doReturn(requestHeadersSpec).when(requestHeadersUriSpec).uri(eq("/api/members/{memberId}"), eq(memberId));
+        doReturn(requestHeadersSpec).when(requestHeadersUriSpec).uri(eq(baseUrl+"/api/members/{memberId}"), eq(memberId));
         doReturn(responseSpec).when(requestHeadersSpec).retrieve();
     }
 
