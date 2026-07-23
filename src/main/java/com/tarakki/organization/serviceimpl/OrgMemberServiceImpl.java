@@ -26,9 +26,8 @@ public class OrgMemberServiceImpl implements OrgMemberService {
     @Transactional
     public OrgMemberDTO addMemberToOrg(OrgMemberDTO orgMemberDto, Long orgId) {
 
-        if (!organizationRepository.existsById(orgId)) {
-            throw new OrganizationNotFoundException(orgId);
-        }
+        organizationRepository.findById(orgId)
+                .orElseThrow(() -> new OrganizationNotFoundException(orgId));
 
         OrgMember orgMember = modelMapper.map(orgMemberDto, OrgMember.class);
 
