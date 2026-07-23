@@ -3,18 +3,23 @@ package com.tarakki.organization.serviceimpl;
 import com.tarakki.common.entity.Organization;
 import com.tarakki.organization.client.MemberClient;
 import com.tarakki.organization.dto.OrganizationDTO;
+import com.tarakki.organization.entity.OrgMember;
 import com.tarakki.organization.exceptionhandling.OwnerIdNotFoundException;
 import com.tarakki.organization.repository.OrganizationRepository;
+import com.tarakki.organization.repository.OrgMemberRepository;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
 import com.tarakki.organization.test_utils.factory.OrganizationTestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Captor;
+import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import com.tarakki.organization.exceptionhandling.MemberNotInOrganizationException;
 import com.tarakki.common.dto.MemberDTO;
+import com.tarakki.organization.dto.OrgMemberDto;
 import org.springframework.web.client.RestClientException;
 
 import java.util.Optional;
@@ -42,6 +47,12 @@ public class OrganizationServiceImplTest {
     @Mock
     private ModelMapper mapper;
 
+    @Mock
+    private OrgMemberRepository orgMemberRepository;
+
+    @Captor
+    private ArgumentCaptor<OrgMember> orgMemberCaptor;
+
     private OrganizationServiceImpl organizationService;
 
     private OrganizationDTO dto;
@@ -58,24 +69,33 @@ public class OrganizationServiceImplTest {
         organizationService = new OrganizationServiceImpl(
                 organizationRepository,
                 mapper,
-                memberClient
+                memberClient,
+                orgMemberRepository
         );
     }
 
     @Test
     void createOrganization_shouldReturnSavedOrganizationDTO() {
-        when(memberClient.getMemberById(ownerId)).thenReturn(new MemberDTO());
+        MemberDTO memberDTO = OrganizationTestDataFactory.createMemberDTO(ownerId, "owner@example.com");
+
+        OrganizationDTO savedDto = dto.toBuilder().orgId(orgId).build();
+
+        OrgMember orgMember = OrganizationTestDataFactory.createOrgMemberEntity(orgId, ownerId, "owner@example.com");
+
+        when(memberClient.getMemberById(ownerId)).thenReturn(memberDTO);
         when(mapper.map(any(OrganizationDTO.class), eq(Organization.class)))
                 .thenReturn(organization);
         when(organizationRepository.save(any(Organization.class)))
                 .thenReturn(organization);
         when(mapper.map(any(Organization.class), eq(OrganizationDTO.class)))
-                .thenReturn(dto);
+                .thenReturn(savedDto);
+        when(mapper.map(any(OrgMemberDto.class), eq(OrgMember.class)))
+                .thenReturn(orgMember);
 
         OrganizationDTO result = organizationService.createOrganization(dto);
 
         assertNotNull(result);
-        assertEquals(dto.getOrgId(), result.getOrgId());
+        assertEquals(savedDto.getOrgId(), result.getOrgId());
         assertEquals(dto.getOrgName(), result.getOrgName());
         assertEquals(dto.getOrgDesc(), result.getOrgDesc());
         assertEquals(dto.getOwnerId(), result.getOwnerId());
@@ -89,6 +109,15 @@ public class OrganizationServiceImplTest {
         verify(mapper).map(any(OrganizationDTO.class), eq(Organization.class));
         verify(organizationRepository).save(any(Organization.class));
         verify(mapper).map(any(Organization.class), eq(OrganizationDTO.class));
+        verify(mapper).map(any(OrgMemberDto.class), eq(OrgMember.class));
+
+        verify(orgMemberRepository).save(orgMemberCaptor.capture());
+        OrgMember savedOrgMember = orgMemberCaptor.getValue();
+        assertEquals(orgMember.getOrgId(), savedOrgMember.getOrgId());
+        assertEquals(orgMember.getMemberId(), savedOrgMember.getMemberId());
+        assertEquals(orgMember.getEmail(), savedOrgMember.getEmail());
+        assertEquals(orgMember.getMemberAccountStatus(), savedOrgMember.getMemberAccountStatus());
+        assertEquals(orgMember.getOrgMemberRole(), savedOrgMember.getOrgMemberRole());
     }
 
     @Test

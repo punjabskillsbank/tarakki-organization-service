@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +36,7 @@ public class AdminOrganizationServiceImpl implements AdminOrganizationService {
         Map<UUID, MemberDTO> membersMap = ownerIds.stream()
                 .map(memberClient::getMemberById)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toMap(MemberDTO::getMemberId, member -> member));
+                .collect(Collectors.toMap(member -> member.getMemberId(), Function.identity()));
 
         return orgDetailsList.stream()
                 .map(details -> {
