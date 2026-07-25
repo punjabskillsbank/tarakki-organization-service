@@ -1,6 +1,5 @@
 package com.tarakki.organization.serviceimpl;
 
-import com.tarakki.common.entity.Organization;
 import com.tarakki.organization.dto.OrgMemberDTO;
 import com.tarakki.organization.entity.OrgMember;
 import com.tarakki.organization.enums.MemberAccountStatus;
@@ -25,7 +24,7 @@ public class OrgMemberServiceImpl implements OrgMemberService {
     @Transactional
     public OrgMemberDTO addMemberToOrg(OrgMemberDTO orgMemberDto, Long orgId) {
 
-        Organization organization = organizationRepository.findById(orgId)
+        organizationRepository.findById(orgId)
                 .orElseThrow(() -> new OrganizationNotFoundException(orgId));
 
         OrgMember orgMember = modelMapper.map(orgMemberDto, OrgMember.class);

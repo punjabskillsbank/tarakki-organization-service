@@ -1,18 +1,24 @@
 package com.tarakki.organization.serviceimpl;
 
+import com.tarakki.common.dto.MemberDTO;
+import com.tarakki.organization.dto.OrgMemberDto;
+import com.tarakki.organization.enums.MemberAccountStatus;
+import com.tarakki.organization.enums.OrgMemberRole;
 import com.tarakki.common.entity.Organization;
 import com.tarakki.organization.client.MemberClient;
 import com.tarakki.organization.dto.OrganizationDTO;
+import com.tarakki.organization.entity.OrgMember;
 import com.tarakki.organization.exceptionhandling.MemberNotInOrganizationException;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
 import com.tarakki.organization.exceptionhandling.OwnerIdNotFoundException;
 import com.tarakki.organization.repository.OrganizationRepository;
+import com.tarakki.organization.repository.OrgMemberRepository;
 import com.tarakki.organization.service.OrganizationService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
-
 
 import java.util.UUID;
 
@@ -22,18 +28,36 @@ public class OrganizationServiceImpl implements OrganizationService {
     private final OrganizationRepository organizationRepository;
     private final ModelMapper mapper;
     private final MemberClient memberClient;
+    private final OrgMemberRepository orgMemberRepository;
 
     @Override
+    @Transactional
     public OrganizationDTO createOrganization(OrganizationDTO organizationRequest) {
         UUID ownerId = organizationRequest.getOwnerId();
+        MemberDTO member;
         try {
-            memberClient.getMemberById(ownerId);
+            member = memberClient.getMemberById(ownerId);
         } catch (RestClientException e) {
             throw new OwnerIdNotFoundException(ownerId);
         }
-        return saveOrganization(organizationRequest);
+        OrganizationDTO savedOrganizationDto = saveOrganization(organizationRequest);
+
+        saveOrgMember(savedOrganizationDto.getOrgId(), ownerId, member.getEmail());
+
+        return savedOrganizationDto;
     }
 
+    private void saveOrgMember(Long orgId, UUID memberId, String email) {
+        OrgMemberDto orgMemberDTO = OrgMemberDto.builder()
+                .orgId(orgId)
+                .memberId(memberId)
+                .email(email)
+                .memberAccountStatus(MemberAccountStatus.ACCEPTED)
+                .orgMemberRole(OrgMemberRole.ORG_ADMIN)
+                .build();
+        OrgMember orgMember = mapper.map(orgMemberDTO, OrgMember.class);
+        orgMemberRepository.save(orgMember);
+    }
 
     private OrganizationDTO saveOrganization(OrganizationDTO organizationRequest) {
         Organization organization = mapper.map(organizationRequest, Organization.class);

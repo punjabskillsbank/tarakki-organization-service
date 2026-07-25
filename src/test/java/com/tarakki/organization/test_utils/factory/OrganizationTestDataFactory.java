@@ -1,7 +1,11 @@
 package com.tarakki.organization.test_utils.factory;
 
 import com.tarakki.common.entity.Organization;
+import com.tarakki.common.dto.MemberDTO;
+import com.tarakki.organization.enums.MemberAccountStatus;
+import com.tarakki.organization.enums.OrgMemberRole;
 import com.tarakki.organization.dto.OrganizationDTO;
+import com.tarakki.organization.entity.OrgMember;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -60,5 +64,21 @@ public class OrganizationTestDataFactory {
         return organizationDetails;
     }
 
+    public static OrgMember createOrgMemberEntity(Long orgId, UUID memberId, String email) {
+        return OrgMember.builder()
+                .orgMemberId(1L)
+                .orgId(orgId)
+                .memberId(memberId)
+                .email(email)
+                .memberAccountStatus(MemberAccountStatus.ACCEPTED)
+                .orgMemberRole(OrgMemberRole.ORG_ADMIN)
+                .build();
+    }
 
+    public static MemberDTO createMemberDTO(UUID memberId, String email) {
+        MemberDTO member = new MemberDTO();
+        member.setMemberId(memberId);
+        member.setEmail(email);
+        return member;
+    }
 }
