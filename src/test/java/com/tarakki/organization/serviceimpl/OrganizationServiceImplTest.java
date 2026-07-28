@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import com.tarakki.organization.exceptionhandling.MemberNotInOrganizationException;
 import com.tarakki.common.dto.MemberDTO;
-import com.tarakki.organization.dto.OrgMemberDto;
+import com.tarakki.organization.dto.OrgMemberDTO;
 import org.springframework.web.client.RestClientException;
 
 import java.util.Optional;
@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -56,6 +57,7 @@ public class OrganizationServiceImplTest {
     private OrganizationServiceImpl organizationService;
 
     private OrganizationDTO dto;
+    private OrganizationDTO updateRequest;
     private Organization organization;
     private UUID ownerId;
     private Long orgId;
@@ -65,6 +67,7 @@ public class OrganizationServiceImplTest {
         ownerId = UUID.randomUUID();
         orgId = OrganizationTestDataFactory.createOrganizationId();
         dto = OrganizationTestDataFactory.createOrganizationDTO(orgId, ownerId);
+        updateRequest = OrganizationTestDataFactory.createOrganizationUpdateRequest();
         organization = OrganizationTestDataFactory.createOrganizationEntity(orgId, ownerId);
         organizationService = new OrganizationServiceImpl(
                 organizationRepository,
@@ -89,7 +92,7 @@ public class OrganizationServiceImplTest {
                 .thenReturn(organization);
         when(mapper.map(any(Organization.class), eq(OrganizationDTO.class)))
                 .thenReturn(savedDto);
-        when(mapper.map(any(OrgMemberDto.class), eq(OrgMember.class)))
+        when(mapper.map(any(OrgMemberDTO.class), eq(OrgMember.class)))
                 .thenReturn(orgMember);
 
         OrganizationDTO result = organizationService.createOrganization(dto);
@@ -109,7 +112,7 @@ public class OrganizationServiceImplTest {
         verify(mapper).map(any(OrganizationDTO.class), eq(Organization.class));
         verify(organizationRepository).save(any(Organization.class));
         verify(mapper).map(any(Organization.class), eq(OrganizationDTO.class));
-        verify(mapper).map(any(OrgMemberDto.class), eq(OrgMember.class));
+        verify(mapper).map(any(OrgMemberDTO.class), eq(OrgMember.class));
 
         verify(orgMemberRepository).save(orgMemberCaptor.capture());
         OrgMember savedOrgMember = orgMemberCaptor.getValue();
@@ -170,6 +173,35 @@ public class OrganizationServiceImplTest {
         assertEquals("Member " + ownerId + " does not belong to organization " + orgId, exception.getMessage());
         verify(organizationRepository).findById(orgId);
         verify(organizationRepository).existsMemberInOrganization(orgId, ownerId);
+    }
+
+    @Test
+    void updateOrganization_shouldReturnUpdatedOrganizationDTO() {
+        when(organizationRepository.findById(orgId)).thenReturn(Optional.of(organization));
+        when(organizationRepository.save(organization)).thenReturn(organization);
+        lenient().when(mapper.map(organization, OrganizationDTO.class)).thenReturn(dto);
+
+        OrganizationDTO result = organizationService.updateOrganization(orgId, updateRequest);
+
+        assertNotNull(result);
+        assertEquals(dto.getOrgName(), result.getOrgName());
+        assertEquals(dto.getOrgCity(), result.getOrgCity());
+
+        verify(organizationRepository).findById(orgId);
+        verify(mapper).map(updateRequest, organization);
+        verify(organizationRepository).save(organization);
+        verify(mapper).map(organization, OrganizationDTO.class);
+    }
+
+    @Test
+    void updateOrganization_shouldThrowOrganizationNotFoundExceptionWhenOrganizationNotFound() {
+        when(organizationRepository.findById(orgId)).thenReturn(Optional.empty());
+
+        OrganizationNotFoundException exception = assertThrows(OrganizationNotFoundException.class,
+                () -> organizationService.updateOrganization(orgId, updateRequest));
+
+        assertEquals("Organization with ID " + orgId + " not found", exception.getMessage());
+        verify(organizationRepository).findById(orgId);
     }
 
     @Test

@@ -19,7 +19,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -207,6 +209,62 @@ public class OrganizationControllerTest {
                         .param("memberId", ownerId.toString()))
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string("Member " + ownerId + " does not belong to organization " + orgId));
+    }
+
+    @Test
+    void shouldUpdateOrganization() throws Exception {
+        when(organizationService.updateOrganization(eq(orgId), any())).thenReturn(output);
+
+        mockMvc.perform(patch("/api/organizations/{organizationId}", orgId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.orgId").value(output.getOrgId()))
+                .andExpect(jsonPath("$.orgName").value(output.getOrgName()))
+                .andExpect(jsonPath("$.orgCity").value(output.getOrgCity()));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenUpdatingOrganizationThatDoesNotExist() throws Exception {
+        when(organizationService.updateOrganization(eq(orgId), any()))
+                .thenThrow(new com.tarakki.organization.exceptionhandling.OrganizationNotFoundException(orgId));
+
+        mockMvc.perform(patch("/api/organizations/{organizationId}", orgId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().string("Organization with ID " + orgId + " not found"));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenUpdatingWithInvalidPostalCode() throws Exception {
+        input.setOrgPostalCode("abc");
+
+        mockMvc.perform(patch("/api/organizations/{organizationId}", orgId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.orgPostalCode").value("Please enter a valid postal code"));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenUpdatingWithCityExceedingColumnLength() throws Exception {
+        input.setOrgCity("a".repeat(101));
+
+        mockMvc.perform(patch("/api/organizations/{organizationId}", orgId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.orgCity").value("City must not exceed 100 characters"));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenUpdatingWithEmptyRequestBody() throws Exception {
+        mockMvc.perform(patch("/api/organizations/{organizationId}", orgId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.orgName").value("Organization name must not be empty"));
     }
 
     @Test
