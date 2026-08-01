@@ -49,6 +49,14 @@ public class OrganizationTestDataFactory {
         organization.setUpdatedAt(LocalDateTime.now());
         return organization;
     }
+
+    public static OrganizationDTO createOrganizationUpdateRequest() {
+        return OrganizationDTO.builder()
+                .orgName("updated ngo")
+                .orgCity("mohali")
+                .build();
+    }
+
     public static Map<String, Object> createOrganizationDetails(Long orgId, UUID ownerId, Long totalMemberCount) {
         Map<String, Object> organizationDetails = new HashMap<>();
         organizationDetails.put("orgId", orgId);

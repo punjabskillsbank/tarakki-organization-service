@@ -1,7 +1,7 @@
 package com.tarakki.organization.serviceimpl;
 
 import com.tarakki.common.dto.MemberDTO;
-import com.tarakki.organization.dto.OrgMemberDto;
+import com.tarakki.organization.dto.OrgMemberDTO;
 import com.tarakki.organization.enums.MemberAccountStatus;
 import com.tarakki.organization.enums.OrgMemberRole;
 import com.tarakki.common.entity.Organization;
@@ -48,7 +48,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     private void saveOrgMember(Long orgId, UUID memberId, String email) {
-        OrgMemberDto orgMemberDTO = OrgMemberDto.builder()
+        OrgMemberDTO orgMemberDTO = OrgMemberDTO.builder()
                 .orgId(orgId)
                 .memberId(memberId)
                 .email(email)
@@ -78,5 +78,17 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public boolean existsMemberInOrganization(Long organizationId, UUID memberId) {
         return organizationRepository.existsMemberInOrganization(organizationId, memberId);
+    }
+
+    @Override
+    @Transactional
+    public OrganizationDTO updateOrganization(Long organizationId, OrganizationDTO organizationRequest) {
+        Organization organization = organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new OrganizationNotFoundException(organizationId));
+
+        mapper.map(organizationRequest, organization);
+        Organization updatedOrganization = organizationRepository.save(organization);
+
+        return mapper.map(updatedOrganization, OrganizationDTO.class);
     }
 }
