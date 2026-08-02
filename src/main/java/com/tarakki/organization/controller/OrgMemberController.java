@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/organizations/{orgId}/members")
 @RequiredArgsConstructor
@@ -23,6 +25,15 @@ public class OrgMemberController {
         OrgMemberDTO response = orgMemberService.addMemberToOrg(orgMemberDto, orgId);
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+    }
+
+    @GetMapping
+    public ResponseEntity<List<OrgMemberDTO>> getMembersByOrgId(@PathVariable Long orgId) {
+
+        List<OrgMemberDTO> response = orgMemberService.getMembersByOrgId(orgId);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 }

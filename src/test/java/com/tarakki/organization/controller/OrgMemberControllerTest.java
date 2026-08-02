@@ -17,9 +17,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,11 +40,13 @@ public class OrgMemberControllerTest {
 
     private OrgMemberDTO dto;
     private Long orgId;
+    private List<OrgMemberDTO> orgMemberDtos;
 
     @BeforeEach
     void setUp() {
         orgId = OrganizationTestDataFactory.createOrganizationId();
         dto = OrgMemberTestDataFactory.createOrgMemberDTO();
+        orgMemberDtos = OrgMemberTestDataFactory.createOrgMemberDTOList();
     }
 
     @Test
@@ -94,5 +99,50 @@ public class OrgMemberControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnMembersByOrgId() throws Exception {
+
+        when(orgMemberService.getMembersByOrgId(orgId))
+                .thenReturn(orgMemberDtos);
+
+        mockMvc.perform(get("/api/organizations/{orgId}/members", orgId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(orgMemberDtos.size()))
+                .andExpect(jsonPath("$[0].orgMemberId").value(orgMemberDtos.get(0).getOrgMemberId()))
+                .andExpect(jsonPath("$[0].orgId").value(orgMemberDtos.get(0).getOrgId()))
+                .andExpect(jsonPath("$[0].memberId").value(orgMemberDtos.get(0).getMemberId().toString()))
+                .andExpect(jsonPath("$[0].email").value(orgMemberDtos.get(0).getEmail()))
+                .andExpect(jsonPath("$[0].memberAccountStatus")
+                        .value(orgMemberDtos.get(0).getMemberAccountStatus().toString()))
+                .andExpect(jsonPath("$[0].orgMemberRole")
+                        .value(orgMemberDtos.get(0).getOrgMemberRole().toString()))
+                .andExpect(jsonPath("$[1].email").value(orgMemberDtos.get(1).getEmail()))
+                .andExpect(jsonPath("$[1].orgMemberRole")
+                        .value(orgMemberDtos.get(1).getOrgMemberRole().toString()));
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenOrgHasNoMembers() throws Exception {
+
+        when(orgMemberService.getMembersByOrgId(orgId))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/api/organizations/{orgId}/members", orgId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void shouldReturnNotFoundExceptionWhenOrgIdIsNotFoundOnGetMembers() throws Exception {
+
+        when(orgMemberService.getMembersByOrgId(orgId))
+                .thenThrow(new OrganizationNotFoundException(orgId));
+
+        mockMvc.perform(get("/api/organizations/{orgId}/members", orgId))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().string(
+                        "Organization with ID " + orgId + " not found"));
     }
 }

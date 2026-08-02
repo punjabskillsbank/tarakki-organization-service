@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class OrgMemberServiceImpl implements OrgMemberService {
@@ -35,5 +37,17 @@ public class OrgMemberServiceImpl implements OrgMemberService {
         OrgMember savedOrgMember = orgMemberRepository.save(orgMember);
 
         return modelMapper.map(savedOrgMember, OrgMemberDTO.class);
+    }
+
+    @Override
+    public List<OrgMemberDTO> getMembersByOrgId(Long orgId) {
+        organizationRepository.findById(orgId)
+                .orElseThrow(() -> new OrganizationNotFoundException(orgId));
+
+        List<OrgMember> orgMembers = orgMemberRepository.findByOrgId(orgId);
+
+        return orgMembers.stream()
+                .map(orgMember -> modelMapper.map(orgMember, OrgMemberDTO.class))
+                .toList();
     }
 }
