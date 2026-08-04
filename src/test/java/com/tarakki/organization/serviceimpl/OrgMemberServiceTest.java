@@ -107,7 +107,7 @@ public class OrgMemberServiceTest {
     }
 
     @Test
-    void getMembersByOrgId_shouldReturnOrgMemberDtoList() {
+    void getMembersByOrgId_shouldReturnOrgMemberDTOList() {
         Long orgId = organization.getOrgId();
 
         when(organizationRepository.findById(orgId))
