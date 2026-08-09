@@ -83,7 +83,7 @@ public class OrganizationServiceImplTest {
 
         OrganizationDTO savedDto = dto.toBuilder().orgId(orgId).build();
 
-        OrgMember orgMember = OrganizationTestDataFactory.createOrgMemberEntity(orgId, ownerId, "owner@example.com");
+        OrgMember orgMember = OrganizationTestDataFactory.createOrgMemberEntity(orgId, ownerId);
 
         when(memberClient.getMemberById(ownerId)).thenReturn(memberDTO);
         when(mapper.map(any(OrganizationDTO.class), eq(Organization.class)))
@@ -118,7 +118,6 @@ public class OrganizationServiceImplTest {
         OrgMember savedOrgMember = orgMemberCaptor.getValue();
         assertEquals(orgMember.getOrgId(), savedOrgMember.getOrgId());
         assertEquals(orgMember.getMemberId(), savedOrgMember.getMemberId());
-        assertEquals(orgMember.getEmail(), savedOrgMember.getEmail());
         assertEquals(orgMember.getMemberAccountStatus(), savedOrgMember.getMemberAccountStatus());
         assertEquals(orgMember.getOrgMemberRole(), savedOrgMember.getOrgMemberRole());
     }

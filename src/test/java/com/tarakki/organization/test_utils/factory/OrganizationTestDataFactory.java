@@ -72,12 +72,11 @@ public class OrganizationTestDataFactory {
         return organizationDetails;
     }
 
-    public static OrgMember createOrgMemberEntity(Long orgId, UUID memberId, String email) {
+    public static OrgMember createOrgMemberEntity(Long orgId, UUID memberId) {
         return OrgMember.builder()
                 .orgMemberId(1L)
                 .orgId(orgId)
                 .memberId(memberId)
-                .email(email)
                 .memberAccountStatus(MemberAccountStatus.ACCEPTED)
                 .orgMemberRole(OrgMemberRole.ORG_ADMIN)
                 .build();

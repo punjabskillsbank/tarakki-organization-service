@@ -27,5 +27,12 @@ public class MemberClient {
                 .retrieve()
                 .body(MemberDTO.class);
     }
+
+    public MemberDTO getMemberByEmail(String email) {
+        return restClient.get()
+                .uri(baseUrl + memberApiEndpoint + "/email/{email}", email)
+                .retrieve()
+                .body(MemberDTO.class);
+    }
 }
 

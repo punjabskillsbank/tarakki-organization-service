@@ -8,7 +8,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
@@ -54,6 +56,13 @@ public class MemberClientTest {
         doReturn(responseSpec).when(requestHeadersSpec).retrieve();
     }
 
+    private void stubRestClientChainForEmail(String email) {
+        doReturn(requestHeadersUriSpec).when(restClient).get();
+        doReturn(requestHeadersSpec).when(requestHeadersUriSpec)
+                .uri(eq(baseUrl+"/api/members/email/{email}"), eq(email));
+        doReturn(responseSpec).when(requestHeadersSpec).retrieve();
+    }
+
 
     @Test
     void getMemberById_shouldReturnMemberDtoWhenSuccessful() {
@@ -77,6 +86,31 @@ public class MemberClientTest {
         when(responseSpec.body(MemberDTO.class)).thenThrow(new RestClientException("500 Internal Server Error"));
 
         assertThrows(RestClientException.class, () -> memberClient.getMemberById(memberId));
+    }
+
+    @Test
+    void getMemberByEmail_shouldReturnMemberDtoWhenSuccessful() {
+        UUID memberId = UUID.randomUUID();
+        MemberDTO expectedMember = AdminOrganizationTestDataFactory.createMemberDTO(memberId);
+
+        stubRestClientChainForEmail(expectedMember.getEmail());
+        when(responseSpec.body(MemberDTO.class)).thenReturn(expectedMember);
+
+        MemberDTO result = memberClient.getMemberByEmail(expectedMember.getEmail());
+
+        assertNotNull(result);
+        assertEquals(expectedMember, result);
+    }
+
+    @Test
+    void getMemberByEmail_shouldPropagateNotFoundWhenMemberDoesNotExist() {
+        String email = "missing@tarakki.com";
+
+        stubRestClientChainForEmail(email);
+        when(responseSpec.body(MemberDTO.class))
+                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "Not Found", null, null, null));
+
+        assertThrows(HttpClientErrorException.NotFound.class, () -> memberClient.getMemberByEmail(email));
     }
 }
 

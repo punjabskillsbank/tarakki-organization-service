@@ -1,8 +1,12 @@
 package com.tarakki.organization.serviceimpl;
 
+import com.tarakki.common.dto.MemberDTO;
+import com.tarakki.organization.client.MemberClient;
 import com.tarakki.organization.dto.OrgMemberDTO;
+import com.tarakki.organization.dto.OrgMemberRequestDTO;
 import com.tarakki.organization.entity.OrgMember;
 import com.tarakki.organization.enums.MemberAccountStatus;
+import com.tarakki.organization.exceptionhandling.MemberEmailNotFoundException;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
 import com.tarakki.organization.repository.OrgMemberRepository;
 import com.tarakki.organization.repository.OrganizationRepository;
@@ -11,6 +15,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -21,15 +26,25 @@ public class OrgMemberServiceImpl implements OrgMemberService {
     private final ModelMapper modelMapper;
     private final OrgMemberRepository orgMemberRepository;
     private final OrganizationRepository organizationRepository;
+    private final MemberClient memberClient;
 
     @Override
     @Transactional
-    public OrgMemberDTO addMemberToOrg(OrgMemberDTO orgMemberDto, Long orgId) {
+    public OrgMemberDTO addMemberToOrg(OrgMemberRequestDTO orgMemberRequestDto, Long orgId) {
 
         organizationRepository.findById(orgId)
                 .orElseThrow(() -> new OrganizationNotFoundException(orgId));
 
-        OrgMember orgMember = modelMapper.map(orgMemberDto, OrgMember.class);
+        MemberDTO member;
+        try {
+            member = memberClient.getMemberByEmail(orgMemberRequestDto.getEmail());
+        } catch (HttpClientErrorException.NotFound exception) {
+            throw new MemberEmailNotFoundException(orgMemberRequestDto.getEmail());
+        }
+
+        OrgMember orgMember = modelMapper.map(orgMemberRequestDto, OrgMember.class);
+        orgMember.setOrgId(orgId);
+        orgMember.setMemberId(member.getMemberId());
 
         if (orgMember.getMemberAccountStatus() == null) {
             orgMember.setMemberAccountStatus(MemberAccountStatus.PENDING);
