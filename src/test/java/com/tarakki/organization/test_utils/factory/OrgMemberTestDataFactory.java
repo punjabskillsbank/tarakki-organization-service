@@ -1,7 +1,6 @@
 package com.tarakki.organization.test_utils.factory;
 
 import com.tarakki.organization.dto.OrgMemberDTO;
-import com.tarakki.organization.dto.OrgMemberRequestDTO;
 import com.tarakki.organization.entity.OrgMember;
 
 import java.time.LocalDateTime;
@@ -22,13 +21,6 @@ public class OrgMemberTestDataFactory {
         return OrgMemberDTO.builder()
                 .orgId(9L)
                 .memberId(UUID.randomUUID())
-                .memberAccountStatus(ACCEPTED)
-                .orgMemberRole(ORG_ADMIN)
-                .build();
-    }
-
-    public static OrgMemberRequestDTO createOrgMemberRequestDTO() {
-        return OrgMemberRequestDTO.builder()
                 .email(ORG_MEMBER_EMAIL)
                 .memberAccountStatus(ACCEPTED)
                 .orgMemberRole(ORG_ADMIN)

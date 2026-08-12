@@ -4,8 +4,6 @@ import com.tarakki.common.dto.MemberDTO;
 import com.tarakki.common.entity.Organization;
 import com.tarakki.organization.client.MemberClient;
 import com.tarakki.organization.dto.OrgMemberDTO;
-import com.tarakki.organization.dto.OrgMemberRequestDTO;
-import com.tarakki.organization.exceptionhandling.MemberEmailNotFoundException;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
 import com.tarakki.organization.entity.OrgMember;
 import com.tarakki.organization.repository.OrgMemberRepository;
@@ -20,8 +18,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +51,6 @@ public class OrgMemberServiceTest {
 
     private OrgMember orgMember;
     private OrgMemberDTO orgMemberDto;
-    private OrgMemberRequestDTO orgMemberRequestDto;
     private MemberDTO member;
     private Organization organization;
     private List<OrgMember> orgMembers;
@@ -67,11 +62,9 @@ public class OrgMemberServiceTest {
 
         orgMemberDto = OrgMemberTestDataFactory.createOrgMemberDTO();
 
-        orgMemberRequestDto = OrgMemberTestDataFactory.createOrgMemberRequestDTO();
-
         UUID memberId = orgMemberDto.getMemberId();
 
-        member = OrganizationTestDataFactory.createMemberDTO(memberId, orgMemberRequestDto.getEmail());
+        member = OrganizationTestDataFactory.createMemberDTO(memberId, orgMemberDto.getEmail());
 
         organization = OrganizationTestDataFactory.createOrganizationEntity(orgMemberDto.getOrgId(), memberId);
 
@@ -85,10 +78,10 @@ public class OrgMemberServiceTest {
         when(organizationRepository.findById(orgMemberDto.getOrgId()))
                 .thenReturn(Optional.of(organization));
 
-        when(memberClient.getMemberByEmail(orgMemberRequestDto.getEmail()))
+        when(memberClient.findMemberByEmail(orgMemberDto.getEmail()))
                 .thenReturn(member);
 
-        when(mapper.map(any(OrgMemberRequestDTO.class), eq(OrgMember.class)))
+        when(mapper.map(any(OrgMemberDTO.class), eq(OrgMember.class)))
                 .thenReturn(orgMember);
 
         when(orgMemberRepository.save(any(OrgMember.class)))
@@ -97,45 +90,66 @@ public class OrgMemberServiceTest {
         when(mapper.map(any(OrgMember.class), eq(OrgMemberDTO.class)))
                 .thenReturn(orgMemberDto);
 
-        OrgMemberDTO result = orgMemberService.addMemberToOrg(orgMemberRequestDto, orgMemberDto.getOrgId());
+        OrgMemberDTO result = orgMemberService.addMemberToOrg(orgMemberDto, orgMemberDto.getOrgId());
 
         assertNotNull(result);
         assertEquals(orgMemberDto.getOrgId(), result.getOrgId());
-        assertEquals(orgMemberDto.getMemberId(), result.getMemberId());
+        assertEquals(member.getMemberId(), result.getMemberId());
         assertEquals(orgMemberDto.getMemberAccountStatus(), result.getMemberAccountStatus());
         assertEquals(orgMemberDto.getOrgMemberRole(), result.getOrgMemberRole());
 
-        ArgumentCaptor<OrgMember> orgMemberCaptor = ArgumentCaptor.forClass(OrgMember.class);
+        ArgumentCaptor<OrgMemberDTO> orgMemberDtoCaptor = ArgumentCaptor.forClass(OrgMemberDTO.class);
 
         verify(organizationRepository).findById(orgMemberDto.getOrgId());
-        verify(memberClient).getMemberByEmail(orgMemberRequestDto.getEmail());
-        verify(mapper).map(any(OrgMemberRequestDTO.class), eq(OrgMember.class));
-        verify(orgMemberRepository).save(orgMemberCaptor.capture());
+        verify(memberClient).findMemberByEmail(orgMemberDto.getEmail());
+        verify(memberClient, never()).createMember(any(MemberDTO.class));
+        verify(mapper).map(orgMemberDtoCaptor.capture(), eq(OrgMember.class));
+        verify(orgMemberRepository).save(any(OrgMember.class));
         verify(mapper).map(any(OrgMember.class), eq(OrgMemberDTO.class));
 
-        assertEquals(orgMemberDto.getOrgId(), orgMemberCaptor.getValue().getOrgId());
-        assertEquals(member.getMemberId(), orgMemberCaptor.getValue().getMemberId());
+        assertEquals(member.getMemberId(), orgMemberDtoCaptor.getValue().getMemberId());
     }
 
     @Test
-    void createOrgMember_shouldThrowMemberEmailNotFoundExceptionWhenEmailHasNoMember() {
+    void createOrgMember_shouldCreateMemberWhenEmailHasNoMember() {
+        UUID createdMemberId = UUID.randomUUID();
+        MemberDTO createdMember = OrganizationTestDataFactory.createMemberDTO(createdMemberId,
+                orgMemberDto.getEmail());
+
         when(organizationRepository.findById(orgMemberDto.getOrgId()))
                 .thenReturn(Optional.of(organization));
 
-        when(memberClient.getMemberByEmail(orgMemberRequestDto.getEmail()))
-                .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND,
-                        "Not Found", null, null, null));
+        when(memberClient.findMemberByEmail(orgMemberDto.getEmail()))
+                .thenReturn(null);
 
-        MemberEmailNotFoundException exception = assertThrows(MemberEmailNotFoundException.class,
-                () -> orgMemberService.addMemberToOrg(orgMemberRequestDto, orgMemberDto.getOrgId()));
+        when(memberClient.createMember(any(MemberDTO.class)))
+                .thenReturn(createdMember);
 
-        assertEquals("Member with email " + orgMemberRequestDto.getEmail() + " not found",
-                exception.getMessage());
+        when(mapper.map(any(OrgMemberDTO.class), eq(OrgMember.class)))
+                .thenReturn(orgMember);
+
+        when(orgMemberRepository.save(any(OrgMember.class)))
+                .thenReturn(orgMember);
+
+        when(mapper.map(any(OrgMember.class), eq(OrgMemberDTO.class)))
+                .thenReturn(orgMemberDto);
+
+        OrgMemberDTO result = orgMemberService.addMemberToOrg(orgMemberDto, orgMemberDto.getOrgId());
+
+        assertNotNull(result);
+
+        ArgumentCaptor<MemberDTO> memberCaptor = ArgumentCaptor.forClass(MemberDTO.class);
+        ArgumentCaptor<OrgMemberDTO> orgMemberDtoCaptor = ArgumentCaptor.forClass(OrgMemberDTO.class);
 
         verify(organizationRepository).findById(orgMemberDto.getOrgId());
-        verify(memberClient).getMemberByEmail(orgMemberRequestDto.getEmail());
-        verify(mapper, never()).map(any(), any());
-        verify(orgMemberRepository, never()).save(any(OrgMember.class));
+        verify(memberClient).findMemberByEmail(orgMemberDto.getEmail());
+        verify(memberClient).createMember(memberCaptor.capture());
+        verify(mapper).map(orgMemberDtoCaptor.capture(), eq(OrgMember.class));
+        verify(orgMemberRepository).save(any(OrgMember.class));
+        verify(mapper).map(any(OrgMember.class), eq(OrgMemberDTO.class));
+
+        assertEquals(orgMemberDto.getEmail(), memberCaptor.getValue().getEmail());
+        assertEquals(createdMemberId, orgMemberDtoCaptor.getValue().getMemberId());
     }
 
     @Test
@@ -144,12 +158,13 @@ public class OrgMemberServiceTest {
                 .thenReturn(Optional.empty());
 
         OrganizationNotFoundException exception = assertThrows(OrganizationNotFoundException.class,
-                () -> orgMemberService.addMemberToOrg(orgMemberRequestDto, orgMember.getOrgId()));
+                () -> orgMemberService.addMemberToOrg(orgMemberDto, orgMember.getOrgId()));
 
         assertEquals("Organization with ID " + orgMember.getOrgId() + " not found", exception.getMessage());
 
         verify(organizationRepository).findById(orgMember.getOrgId());
-        verify(memberClient, never()).getMemberByEmail(any());
+        verify(memberClient, never()).findMemberByEmail(any());
+        verify(memberClient, never()).createMember(any(MemberDTO.class));
         verify(orgMemberRepository, never()).save(any(OrgMember.class));
     }
 

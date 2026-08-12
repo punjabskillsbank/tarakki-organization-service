@@ -31,11 +31,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
     }
 
-    @ExceptionHandler(MemberEmailNotFoundException.class)
-    public ResponseEntity<String> handleMemberEmailNotFound(MemberEmailNotFoundException exception) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
-    }
-
     @ExceptionHandler(MemberNotInOrganizationException.class)
     public ResponseEntity<String> handleMemberNotInOrganization(MemberNotInOrganizationException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
