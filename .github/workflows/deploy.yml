@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - develop
-      - feature/TK_98
 
 jobs:
   deploy:
