@@ -4,13 +4,13 @@ on:
   push:
     branches:
       - develop
-      - main
-      - 'feature/TK_*'
-      - 'bugfix/TK_*'
+      - feature/TK_98
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: 'DEV'
     steps:
       - name: Trigger Render Deploy Hook
         env:
