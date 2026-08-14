@@ -1,6 +1,7 @@
 package com.tarakki.organization.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tarakki.organization.dto.OrgMemberDTO;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
 import com.tarakki.organization.exceptionhandling.GlobalExceptionHandler;
@@ -110,6 +111,20 @@ public class OrgMemberControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenMemberAccountStatusIsAbsentFromBody() throws Exception {
+
+        ObjectNode body = objectMapper.valueToTree(dto);
+        body.remove("memberAccountStatus");
+
+        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.memberAccountStatus")
+                        .value("MemberAccountStatus must not be empty"));
     }
 
     @Test
