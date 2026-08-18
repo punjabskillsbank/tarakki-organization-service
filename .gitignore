@@ -32,4 +32,7 @@ build/
 ### VS Code ###
 .vscode/
 .codex
+
+### Local Environment Secrets ###
 .env
+
