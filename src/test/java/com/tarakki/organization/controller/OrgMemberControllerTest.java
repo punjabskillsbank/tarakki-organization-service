@@ -1,6 +1,7 @@
 package com.tarakki.organization.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tarakki.organization.dto.OrgMemberDTO;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
 import com.tarakki.organization.exceptionhandling.GlobalExceptionHandler;
@@ -91,6 +92,42 @@ public class OrgMemberControllerTest {
     }
 
     @Test
+    void shouldReturnBadRequestWhenOrgIdIsMissing() throws Exception {
+
+        dto.setOrgId(null);
+
+        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenMemberAccountStatusIsMissing() throws Exception {
+
+        dto.setMemberAccountStatus(null);
+
+        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenMemberAccountStatusIsAbsentFromBody() throws Exception {
+
+        ObjectNode body = objectMapper.valueToTree(dto);
+        body.remove("memberAccountStatus");
+
+        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.memberAccountStatus")
+                        .value("MemberAccountStatus must not be empty"));
+    }
+
+    @Test
     void shouldReturnBadRequestWhenOrgMemberRoleIsMissing() throws Exception {
 
         dto.setOrgMemberRole(null);
@@ -113,12 +150,11 @@ public class OrgMemberControllerTest {
                 .andExpect(jsonPath("$[0].orgMemberId").value(orgMemberDtos.get(0).getOrgMemberId()))
                 .andExpect(jsonPath("$[0].orgId").value(orgMemberDtos.get(0).getOrgId()))
                 .andExpect(jsonPath("$[0].memberId").value(orgMemberDtos.get(0).getMemberId().toString()))
-                .andExpect(jsonPath("$[0].email").value(orgMemberDtos.get(0).getEmail()))
                 .andExpect(jsonPath("$[0].memberAccountStatus")
                         .value(orgMemberDtos.get(0).getMemberAccountStatus().toString()))
                 .andExpect(jsonPath("$[0].orgMemberRole")
                         .value(orgMemberDtos.get(0).getOrgMemberRole().toString()))
-                .andExpect(jsonPath("$[1].email").value(orgMemberDtos.get(1).getEmail()))
+                .andExpect(jsonPath("$[1].memberId").value(orgMemberDtos.get(1).getMemberId().toString()))
                 .andExpect(jsonPath("$[1].orgMemberRole")
                         .value(orgMemberDtos.get(1).getOrgMemberRole().toString()));
     }

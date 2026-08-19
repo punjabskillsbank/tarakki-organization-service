@@ -1,6 +1,5 @@
 package com.tarakki.organization.serviceimpl;
 
-import com.tarakki.common.dto.MemberDTO;
 import com.tarakki.organization.dto.OrgMemberDTO;
 import com.tarakki.organization.enums.MemberAccountStatus;
 import com.tarakki.organization.enums.OrgMemberRole;
@@ -34,24 +33,22 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional
     public OrganizationDTO createOrganization(OrganizationDTO organizationRequest) {
         UUID ownerId = organizationRequest.getOwnerId();
-        MemberDTO member;
         try {
-            member = memberClient.getMemberById(ownerId);
+            memberClient.getMemberById(ownerId);
         } catch (RestClientException e) {
             throw new OwnerIdNotFoundException(ownerId);
         }
         OrganizationDTO savedOrganizationDto = saveOrganization(organizationRequest);
 
-        saveOrgMember(savedOrganizationDto.getOrgId(), ownerId, member.getEmail());
+        saveOrgMember(savedOrganizationDto.getOrgId(), ownerId);
 
         return savedOrganizationDto;
     }
 
-    private void saveOrgMember(Long orgId, UUID memberId, String email) {
+    private void saveOrgMember(Long orgId, UUID memberId) {
         OrgMemberDTO orgMemberDTO = OrgMemberDTO.builder()
                 .orgId(orgId)
                 .memberId(memberId)
-                .email(email)
                 .memberAccountStatus(MemberAccountStatus.ACCEPTED)
                 .orgMemberRole(OrgMemberRole.ORG_ADMIN)
                 .build();

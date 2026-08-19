@@ -33,11 +33,8 @@ public class OrgMember {
     @Column(name = "org_id", nullable = false)
     private Long orgId;
 
-    @Column(name = "member_id")
+    @Column(name = "member_id", nullable = false)
     private UUID memberId;
-
-    @Column(name = "email", nullable = false)
-    private String email;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)

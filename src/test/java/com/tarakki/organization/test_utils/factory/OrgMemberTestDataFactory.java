@@ -15,11 +15,13 @@ import static com.tarakki.organization.enums.OrgMemberRole.ORG_MEMBER;
 
 public class OrgMemberTestDataFactory {
 
+    public static final String ORG_MEMBER_EMAIL = "myEmail@gamil.com";
+
     public static OrgMemberDTO createOrgMemberDTO() {
         return OrgMemberDTO.builder()
                 .orgId(9L)
                 .memberId(UUID.randomUUID())
-                .email("myEmail@gamil.com")
+                .email(ORG_MEMBER_EMAIL)
                 .memberAccountStatus(ACCEPTED)
                 .orgMemberRole(ORG_ADMIN)
                 .build();
@@ -30,7 +32,6 @@ public class OrgMemberTestDataFactory {
                 .orgMemberId(1L)
                 .orgId(9L)
                 .memberId(UUID.randomUUID())
-                .email("myEmail@gamil.com")
                 .memberAccountStatus(ACCEPTED)
                 .orgMemberRole(ORG_ADMIN)
                 .createdAt(LocalDateTime.now())
@@ -43,7 +44,6 @@ public class OrgMemberTestDataFactory {
                 .orgMemberId(1L)
                 .orgId(9L)
                 .memberId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
-                .email("admin@tarakki.com")
                 .memberAccountStatus(ACCEPTED)
                 .orgMemberRole(ORG_ADMIN)
                 .createdAt(LocalDateTime.now())
@@ -54,7 +54,6 @@ public class OrgMemberTestDataFactory {
                 .orgMemberId(2L)
                 .orgId(9L)
                 .memberId(UUID.fromString("22222222-2222-2222-2222-222222222222"))
-                .email("member@tarakki.com")
                 .memberAccountStatus(PENDING)
                 .orgMemberRole(ORG_MEMBER)
                 .createdAt(LocalDateTime.now())
@@ -70,7 +69,6 @@ public class OrgMemberTestDataFactory {
                         .orgMemberId(orgMember.getOrgMemberId())
                         .orgId(orgMember.getOrgId())
                         .memberId(orgMember.getMemberId())
-                        .email(orgMember.getEmail())
                         .memberAccountStatus(orgMember.getMemberAccountStatus())
                         .orgMemberRole(orgMember.getOrgMemberRole())
                         .createdAt(orgMember.getCreatedAt())

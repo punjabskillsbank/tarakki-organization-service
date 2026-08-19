@@ -1,8 +1,9 @@
 package com.tarakki.organization.serviceimpl;
 
+import com.tarakki.common.dto.MemberDTO;
+import com.tarakki.organization.client.MemberClient;
 import com.tarakki.organization.dto.OrgMemberDTO;
 import com.tarakki.organization.entity.OrgMember;
-import com.tarakki.organization.enums.MemberAccountStatus;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
 import com.tarakki.organization.repository.OrgMemberRepository;
 import com.tarakki.organization.repository.OrganizationRepository;
@@ -21,6 +22,7 @@ public class OrgMemberServiceImpl implements OrgMemberService {
     private final ModelMapper modelMapper;
     private final OrgMemberRepository orgMemberRepository;
     private final OrganizationRepository organizationRepository;
+    private final MemberClient memberClient;
 
     @Override
     @Transactional
@@ -29,11 +31,18 @@ public class OrgMemberServiceImpl implements OrgMemberService {
         organizationRepository.findById(orgId)
                 .orElseThrow(() -> new OrganizationNotFoundException(orgId));
 
+        MemberDTO member = memberClient.findMemberByEmail(orgMemberDto.getEmail());
+
+        if (member == null) {
+            MemberDTO newMember = new MemberDTO();
+            newMember.setEmail(orgMemberDto.getEmail());
+            member = memberClient.createMember(newMember);
+        }
+
+        orgMemberDto.setMemberId(member.getMemberId());
+
         OrgMember orgMember = modelMapper.map(orgMemberDto, OrgMember.class);
 
-        if (orgMember.getMemberAccountStatus() == null) {
-            orgMember.setMemberAccountStatus(MemberAccountStatus.PENDING);
-        }
         OrgMember savedOrgMember = orgMemberRepository.save(orgMember);
 
         return modelMapper.map(savedOrgMember, OrgMemberDTO.class);
