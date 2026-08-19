@@ -36,7 +36,7 @@ public class AdminOrganizationServiceImpl implements AdminOrganizationService {
         Map<UUID, MemberDTO> membersMap = ownerIds.stream()
                 .map(memberClient::getMemberById)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toMap(member -> member.getMemberId(), Function.identity()));
+                .collect(Collectors.toMap(member -> member.getMemberId(), member -> member));
 
         return orgDetailsList.stream()
                 .map(details -> {
