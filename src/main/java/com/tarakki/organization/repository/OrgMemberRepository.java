@@ -8,4 +8,6 @@ import java.util.List;
 public interface OrgMemberRepository extends JpaRepository<OrgMember, Long> {
 
     List<OrgMember> findByOrgId(Long orgId);
+
+    void deleteOrgMemberByOrgMemberId(Long orgMemberId ,Long orgId);
 }

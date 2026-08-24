@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,10 +43,12 @@ public class OrgMemberControllerTest {
     private OrgMemberDTO dto;
     private Long orgId;
     private List<OrgMemberDTO> orgMemberDtos;
+    private Long orgMemberId;
 
     @BeforeEach
     void setUp() {
         orgId = OrganizationTestDataFactory.createOrganizationId();
+        orgMemberId = OrgMemberTestDataFactory.createOrgMember().getOrgMemberId();
         dto = OrgMemberTestDataFactory.createOrgMemberDTO();
         orgMemberDtos = OrgMemberTestDataFactory.createOrgMemberDTOList();
     }
@@ -180,5 +183,14 @@ public class OrgMemberControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string(
                         "Organization with ID " + orgId + " not found"));
+    }
+
+    @Test
+    void shouldDeleteOrgMember() throws Exception {
+        System.out.println("sjs"+orgMemberId+orgId);
+        orgMemberService.deleteOrgMember(orgMemberId,orgId);
+
+        mockMvc.perform(delete("/api/organizations/{orgId}/members/{orgMemberId}",orgId,orgMemberId))
+                .andExpect(status().isNoContent());
     }
 }

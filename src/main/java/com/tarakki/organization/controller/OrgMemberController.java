@@ -36,5 +36,12 @@ public class OrgMemberController {
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
+
+    @DeleteMapping("/{orgMemberId}")
+    public ResponseEntity<Void> deleteOrgMember(@PathVariable Long orgMemberId, @PathVariable Long orgId) {
+        orgMemberService.deleteOrgMember(orgMemberId, orgId);
+
+        return ResponseEntity.noContent().build();
+    }
 }
 

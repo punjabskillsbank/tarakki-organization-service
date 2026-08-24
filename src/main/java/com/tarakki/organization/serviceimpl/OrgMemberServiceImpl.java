@@ -59,4 +59,10 @@ public class OrgMemberServiceImpl implements OrgMemberService {
                 .map(orgMember -> modelMapper.map(orgMember, OrgMemberDTO.class))
                 .toList();
     }
+
+    @Override
+    @Transactional
+    public void deleteOrgMember(Long orgMemberId, Long OrgId) {
+        orgMemberRepository.deleteOrgMemberByOrgMemberId(orgMemberId, OrgId);
+    }
 }
