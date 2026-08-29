@@ -1,7 +1,7 @@
 package com.tarakki.organization.dto;
 
-import com.tarakki.organization.enums.MemberAccountStatus;
 import com.tarakki.organization.enums.OrgMemberRole;
+import com.tarakki.organization.enums.MemberAccountStatus;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

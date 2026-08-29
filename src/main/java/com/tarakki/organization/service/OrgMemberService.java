@@ -9,4 +9,6 @@ public interface OrgMemberService {
     OrgMemberDTO addMemberToOrg(OrgMemberDTO orgMemberDto, Long OrgId);
 
     List<OrgMemberDTO> getMembersByOrgId(Long orgId);
+
+    void deleteOrgMember(Long orgMemberId, Long OrgId);
 }

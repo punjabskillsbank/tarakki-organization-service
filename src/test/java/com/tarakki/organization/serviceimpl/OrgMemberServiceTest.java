@@ -24,11 +24,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -237,5 +234,15 @@ public class OrgMemberServiceTest {
         verify(organizationRepository).findById(orgId);
         verify(orgMemberRepository).findByOrgId(orgId);
         verify(mapper, never()).map(any(), any());
+    }
+
+    @Test
+    void shouldDeleteBoard() {
+        Long orgId = organization.getOrgId();
+
+        orgMemberService.deleteOrgMember(1L, orgId);
+
+        verify(orgMemberRepository).deleteOrgMemberByOrgMemberId(1L, orgId);
+        verify(orgMemberRepository, never()).existsById(anyLong());
     }
 }
