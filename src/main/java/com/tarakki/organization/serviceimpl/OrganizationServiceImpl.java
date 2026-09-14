@@ -84,6 +84,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .orElseThrow(() -> new OrganizationNotFoundException(organizationId));
 
         mapper.map(organizationRequest, organization);
+        organization.setOrgId(organizationId);
         Organization updatedOrganization = organizationRepository.save(organization);
 
         return mapper.map(updatedOrganization, OrganizationDTO.class);

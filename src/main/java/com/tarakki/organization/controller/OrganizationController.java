@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+import com.tarakki.common.audit.annotation.Auditable;
+import com.tarakki.common.entity.Organization;
+
 @RestController
 @RequestMapping("/api/organizations")
 @RequiredArgsConstructor
@@ -46,12 +49,13 @@ public class OrganizationController {
         return new ResponseEntity<>(exists, HttpStatus.OK);
     }
 
+    @Auditable(eventName = "ORGANIZATION_UPDATED", entityName = "ORGANIZATION", entityClass = Organization.class, entityIdArgSpel = "#organizationId")
     @PatchMapping("/{organizationId}")
     public ResponseEntity<OrganizationDTO> updateOrganization(
             @PathVariable Long organizationId,
             @Valid @RequestBody OrganizationDTO organizationRequest) {
-        OrganizationDTO updatedOrganization =
-                organizationService.updateOrganization(organizationId, organizationRequest);
+        OrganizationDTO updatedOrganization = organizationService.updateOrganization(organizationId,
+                organizationRequest);
         return new ResponseEntity<>(updatedOrganization, HttpStatus.OK);
     }
 }
