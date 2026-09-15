@@ -109,7 +109,7 @@ public class MemberClientTest {
         MemberDTO expectedMember = AdminOrganizationTestDataFactory.createMemberDTO(UUID.randomUUID());
 
         stubRestClientChainForAllMembers();
-        when(responseSpec.body(any(ParameterizedTypeReference.class)))
+        when(responseSpec.body(org.mockito.ArgumentMatchers.<ParameterizedTypeReference<List<MemberDTO>>>any()))
                 .thenReturn(List.of(expectedMember));
 
         MemberDTO result = memberClient.findMemberByEmail(expectedMember.getEmail());
@@ -124,7 +124,7 @@ public class MemberClientTest {
         MemberDTO existingMember = AdminOrganizationTestDataFactory.createMemberDTO(UUID.randomUUID());
 
         stubRestClientChainForAllMembers();
-        when(responseSpec.body(any(ParameterizedTypeReference.class)))
+        when(responseSpec.body(org.mockito.ArgumentMatchers.<ParameterizedTypeReference<List<MemberDTO>>>any()))
                 .thenReturn(List.of(existingMember));
 
         MemberDTO result = memberClient.findMemberByEmail("missing@tarakki.com");
@@ -135,7 +135,7 @@ public class MemberClientTest {
     @Test
     void findMemberByEmail_shouldReturnNullWhenThereAreNoMembers() {
         stubRestClientChainForAllMembers();
-        when(responseSpec.body(any(ParameterizedTypeReference.class)))
+        when(responseSpec.body(org.mockito.ArgumentMatchers.<ParameterizedTypeReference<List<MemberDTO>>>any()))
                 .thenReturn(List.of());
 
         MemberDTO result = memberClient.findMemberByEmail("missing@tarakki.com");
