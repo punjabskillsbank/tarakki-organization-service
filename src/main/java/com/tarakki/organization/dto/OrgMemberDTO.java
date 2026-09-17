@@ -28,6 +28,7 @@ public class OrgMemberDTO {
     private String email;
 
     @NotNull(message = "MemberAccountStatus must not be empty")
+    @Builder.Default
     private MemberAccountStatus memberAccountStatus = MemberAccountStatus.PENDING;
 
     @NotNull(message = "OrgMemberRole must not be empty")
