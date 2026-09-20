@@ -1,5 +1,6 @@
 package com.tarakki.organization.config;
 
+import com.tarakki.organization.client.BearerTokenForwardingInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +25,9 @@ public class RestClientConfig {
         factory.setConnectTimeout(Duration.ofMillis(connectTimeout));
         factory.setReadTimeout(Duration.ofMillis(readTimeout));
         
-        return RestClient.builder().requestFactory(factory);
+        return RestClient.builder()
+                .requestFactory(factory)
+                .requestInterceptor(new BearerTokenForwardingInterceptor());
     }
 
     @Bean
