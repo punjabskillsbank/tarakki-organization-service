@@ -1,6 +1,8 @@
 package com.tarakki.organization.controller;
 
+import com.tarakki.common.audit.annotation.Auditable;
 import com.tarakki.organization.dto.OrgMemberDTO;
+import com.tarakki.organization.entity.OrgMember;
 import com.tarakki.organization.service.OrgMemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +38,12 @@ public class OrgMemberController {
 
     }
 
+    @Auditable(eventName = "ORG_MEMBER_DELETED", entityName = "ORG_MEMBER", entityClass = OrgMember.class, entityIdArgSpel = "#orgMemberId")
     @DeleteMapping("/{orgMemberId}")
     public ResponseEntity<Void> deleteOrgMember(@PathVariable Long orgMemberId, @PathVariable Long orgId) {
         orgMemberService.deleteOrgMember(orgMemberId, orgId);
 
         return ResponseEntity.noContent().build();
     }
+
 }
