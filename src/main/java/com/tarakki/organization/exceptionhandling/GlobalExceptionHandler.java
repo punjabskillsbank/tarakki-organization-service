@@ -31,6 +31,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
     }
 
+    @ExceptionHandler(OrgMemberNotFoundException.class)
+    public ResponseEntity<String> handleOrgMemberNotFound(OrgMemberNotFoundException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+    }
+
     @ExceptionHandler(MemberNotInOrganizationException.class)
     public ResponseEntity<String> handleMemberNotInOrganization(MemberNotInOrganizationException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());

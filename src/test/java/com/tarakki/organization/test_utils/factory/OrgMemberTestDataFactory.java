@@ -1,6 +1,7 @@
 package com.tarakki.organization.test_utils.factory;
 
 import com.tarakki.organization.dto.OrgMemberDTO;
+import com.tarakki.organization.dto.OrgMemberUpdateRequest;
 import com.tarakki.organization.entity.OrgMember;
 
 import java.time.LocalDateTime;
@@ -36,6 +37,13 @@ public class OrgMemberTestDataFactory {
                 .orgMemberRole(ORG_ADMIN)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    public static OrgMemberUpdateRequest createOrgMemberUpdateRequest() {
+        return OrgMemberUpdateRequest.builder()
+                .memberAccountStatus(PENDING)
+                .orgMemberRole(ORG_MEMBER)
                 .build();
     }
 

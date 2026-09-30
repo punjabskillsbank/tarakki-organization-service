@@ -2,6 +2,7 @@ package com.tarakki.organization.controller;
 
 import com.tarakki.common.audit.annotation.Auditable;
 import com.tarakki.organization.dto.OrgMemberDTO;
+import com.tarakki.organization.dto.OrgMemberUpdateRequest;
 import com.tarakki.organization.entity.OrgMember;
 import com.tarakki.organization.service.OrgMemberService;
 import jakarta.validation.Valid;
@@ -36,6 +37,16 @@ public class OrgMemberController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
+    }
+
+    @Auditable(eventName = "ORG_MEMBER_UPDATED", entityName = "ORG_MEMBER", entityClass = OrgMember.class, entityIdArgSpel = "#orgMemberId")
+    @PatchMapping("/{orgMemberId}")
+    public ResponseEntity<OrgMemberDTO> updateOrgMember(@PathVariable Long orgMemberId, @PathVariable Long orgId,
+            @Valid @RequestBody OrgMemberUpdateRequest updateRequest) {
+
+        OrgMemberDTO response = orgMemberService.updateOrgMember(orgMemberId, orgId, updateRequest);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Auditable(eventName = "ORG_MEMBER_DELETED", entityName = "ORG_MEMBER", entityClass = OrgMember.class, entityIdArgSpel = "#orgMemberId")
