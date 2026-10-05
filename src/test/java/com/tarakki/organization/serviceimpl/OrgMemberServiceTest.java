@@ -4,6 +4,10 @@ import com.tarakki.common.dto.MemberDTO;
 import com.tarakki.common.entity.Organization;
 import com.tarakki.organization.client.MemberClient;
 import com.tarakki.organization.dto.OrgMemberDTO;
+import com.tarakki.organization.dto.OrgMemberUpdateRequest;
+import com.tarakki.organization.enums.MemberAccountStatus;
+import com.tarakki.organization.enums.OrgMemberRole;
+import com.tarakki.organization.exceptionhandling.OrgMemberNotFoundException;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
 import com.tarakki.organization.entity.OrgMember;
 import com.tarakki.organization.repository.OrgMemberRepository;
@@ -233,6 +237,114 @@ public class OrgMemberServiceTest {
 
         verify(organizationRepository).findById(orgId);
         verify(orgMemberRepository).findByOrgId(orgId);
+        verify(mapper, never()).map(any(), any());
+    }
+
+    @Test
+    void updateOrgMember_shouldUpdateStatusAndRole() {
+        Long orgId = organization.getOrgId();
+        Long orgMemberId = orgMember.getOrgMemberId();
+        OrgMemberUpdateRequest updateRequest = OrgMemberTestDataFactory.createOrgMemberUpdateRequest();
+
+        when(organizationRepository.findById(orgId))
+                .thenReturn(Optional.of(organization));
+
+        when(orgMemberRepository.findByOrgMemberIdAndOrgId(orgMemberId, orgId))
+                .thenReturn(Optional.of(orgMember));
+
+        when(orgMemberRepository.save(orgMember))
+                .thenReturn(orgMember);
+
+        when(mapper.map(orgMember, OrgMemberDTO.class))
+                .thenReturn(orgMemberDto);
+
+        OrgMemberDTO result = orgMemberService.updateOrgMember(orgMemberId, orgId, updateRequest);
+
+        assertNotNull(result);
+        assertEquals(orgMemberDto, result);
+        assertEquals(updateRequest.getMemberAccountStatus(), orgMember.getMemberAccountStatus());
+        assertEquals(updateRequest.getOrgMemberRole(), orgMember.getOrgMemberRole());
+
+        verify(organizationRepository).findById(orgId);
+        verify(orgMemberRepository).findByOrgMemberIdAndOrgId(orgMemberId, orgId);
+        verify(orgMemberRepository).save(orgMember);
+        verify(mapper).map(orgMember, OrgMemberDTO.class);
+        verify(memberClient, never()).findMemberByEmail(any());
+    }
+
+    @Test
+    void updateOrgMember_shouldKeepExistingValuesWhenRequestFieldsAreNull() {
+        Long orgId = organization.getOrgId();
+        Long orgMemberId = orgMember.getOrgMemberId();
+        OrgMemberUpdateRequest updateRequest = new OrgMemberUpdateRequest();
+        MemberAccountStatus originalStatus = orgMember.getMemberAccountStatus();
+        OrgMemberRole originalRole = orgMember.getOrgMemberRole();
+
+        when(organizationRepository.findById(orgId))
+                .thenReturn(Optional.of(organization));
+
+        when(orgMemberRepository.findByOrgMemberIdAndOrgId(orgMemberId, orgId))
+                .thenReturn(Optional.of(orgMember));
+
+        when(orgMemberRepository.save(orgMember))
+                .thenReturn(orgMember);
+
+        when(mapper.map(orgMember, OrgMemberDTO.class))
+                .thenReturn(orgMemberDto);
+
+        OrgMemberDTO result = orgMemberService.updateOrgMember(orgMemberId, orgId, updateRequest);
+
+        assertNotNull(result);
+        assertEquals(originalStatus, orgMember.getMemberAccountStatus());
+        assertEquals(originalRole, orgMember.getOrgMemberRole());
+
+        verify(organizationRepository).findById(orgId);
+        verify(orgMemberRepository).findByOrgMemberIdAndOrgId(orgMemberId, orgId);
+        verify(orgMemberRepository).save(orgMember);
+        verify(mapper).map(orgMember, OrgMemberDTO.class);
+    }
+
+    @Test
+    void updateOrgMember_shouldThrowOrganizationNotFoundExceptionWhenOrgIdIsNotFound() {
+        Long orgId = organization.getOrgId();
+        Long orgMemberId = orgMember.getOrgMemberId();
+        OrgMemberUpdateRequest updateRequest = OrgMemberTestDataFactory.createOrgMemberUpdateRequest();
+
+        when(organizationRepository.findById(orgId))
+                .thenReturn(Optional.empty());
+
+        OrganizationNotFoundException exception = assertThrows(OrganizationNotFoundException.class,
+                () -> orgMemberService.updateOrgMember(orgMemberId, orgId, updateRequest));
+
+        assertEquals("Organization with ID " + orgId + " not found", exception.getMessage());
+
+        verify(organizationRepository).findById(orgId);
+        verify(orgMemberRepository, never()).findByOrgMemberIdAndOrgId(anyLong(), anyLong());
+        verify(orgMemberRepository, never()).save(any(OrgMember.class));
+        verify(mapper, never()).map(any(), any());
+    }
+
+    @Test
+    void updateOrgMember_shouldThrowOrgMemberNotFoundExceptionWhenOrgMemberIsNotFound() {
+        Long orgId = organization.getOrgId();
+        Long orgMemberId = orgMember.getOrgMemberId();
+        OrgMemberUpdateRequest updateRequest = OrgMemberTestDataFactory.createOrgMemberUpdateRequest();
+
+        when(organizationRepository.findById(orgId))
+                .thenReturn(Optional.of(organization));
+
+        when(orgMemberRepository.findByOrgMemberIdAndOrgId(orgMemberId, orgId))
+                .thenReturn(Optional.empty());
+
+        OrgMemberNotFoundException exception = assertThrows(OrgMemberNotFoundException.class,
+                () -> orgMemberService.updateOrgMember(orgMemberId, orgId, updateRequest));
+
+        assertEquals("Org member with ID " + orgMemberId + " not found in organization " + orgId,
+                exception.getMessage());
+
+        verify(organizationRepository).findById(orgId);
+        verify(orgMemberRepository).findByOrgMemberIdAndOrgId(orgMemberId, orgId);
+        verify(orgMemberRepository, never()).save(any(OrgMember.class));
         verify(mapper, never()).map(any(), any());
     }
 
