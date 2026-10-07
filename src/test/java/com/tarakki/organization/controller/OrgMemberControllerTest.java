@@ -3,6 +3,8 @@ package com.tarakki.organization.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tarakki.organization.dto.OrgMemberDTO;
+import com.tarakki.organization.dto.OrgMemberUpdateRequest;
+import com.tarakki.organization.exceptionhandling.OrgMemberNotFoundException;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
 import com.tarakki.organization.exceptionhandling.GlobalExceptionHandler;
 import com.tarakki.organization.service.OrgMemberService;
@@ -22,8 +24,10 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -184,6 +188,71 @@ public class OrgMemberControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string(
                         "Organization with ID " + orgId + " not found"));
+    }
+
+    @Test
+    void shouldUpdateOrgMember() throws Exception {
+        OrgMemberUpdateRequest updateRequest = OrgMemberTestDataFactory.createOrgMemberUpdateRequest();
+
+        when(orgMemberService.updateOrgMember(eq(orgMemberId), eq(orgId), any(OrgMemberUpdateRequest.class)))
+                .thenReturn(dto);
+
+        mockMvc.perform(patch("/api/organizations/{orgId}/members/{orgMemberId}", orgId, orgMemberId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.orgId").value(dto.getOrgId()))
+                .andExpect(jsonPath("$.memberAccountStatus").value(dto.getMemberAccountStatus().toString()))
+                .andExpect(jsonPath("$.orgMemberRole").value(dto.getOrgMemberRole().toString()));
+
+        verify(orgMemberService).updateOrgMember(eq(orgMemberId), eq(orgId), any(OrgMemberUpdateRequest.class));
+    }
+
+    @Test
+    void shouldUpdateOrgMemberWhenOnlyOneFieldIsSent() throws Exception {
+        when(orgMemberService.updateOrgMember(eq(orgMemberId), eq(orgId), any(OrgMemberUpdateRequest.class)))
+                .thenReturn(dto);
+
+        mockMvc.perform(patch("/api/organizations/{orgId}/members/{orgMemberId}", orgId, orgMemberId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"orgMemberRole\":\"ORG_MEMBER\"}"))
+                .andExpect(status().isOk());
+
+        verify(orgMemberService).updateOrgMember(eq(orgMemberId), eq(orgId), any(OrgMemberUpdateRequest.class));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenOrgMemberIsNotFoundOnUpdate() throws Exception {
+        OrgMemberUpdateRequest updateRequest = OrgMemberTestDataFactory.createOrgMemberUpdateRequest();
+
+        when(orgMemberService.updateOrgMember(eq(orgMemberId), eq(orgId), any(OrgMemberUpdateRequest.class)))
+                .thenThrow(new OrgMemberNotFoundException(orgMemberId, orgId));
+
+        mockMvc.perform(patch("/api/organizations/{orgId}/members/{orgMemberId}", orgId, orgMemberId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().string(
+                        "Org member with ID " + orgMemberId + " not found in organization " + orgId));
+
+        verify(orgMemberService).updateOrgMember(eq(orgMemberId), eq(orgId), any(OrgMemberUpdateRequest.class));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenOrgIdIsNotFoundOnUpdate() throws Exception {
+        OrgMemberUpdateRequest updateRequest = OrgMemberTestDataFactory.createOrgMemberUpdateRequest();
+
+        when(orgMemberService.updateOrgMember(eq(orgMemberId), eq(orgId), any(OrgMemberUpdateRequest.class)))
+                .thenThrow(new OrganizationNotFoundException(orgId));
+
+        mockMvc.perform(patch("/api/organizations/{orgId}/members/{orgMemberId}", orgId, orgMemberId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().string(
+                        "Organization with ID " + orgId + " not found"));
+
+        verify(orgMemberService).updateOrgMember(eq(orgMemberId), eq(orgId), any(OrgMemberUpdateRequest.class));
     }
 
     @Test

@@ -3,7 +3,9 @@ package com.tarakki.organization.serviceimpl;
 import com.tarakki.common.dto.MemberDTO;
 import com.tarakki.organization.client.MemberClient;
 import com.tarakki.organization.dto.OrgMemberDTO;
+import com.tarakki.organization.dto.OrgMemberUpdateRequest;
 import com.tarakki.organization.entity.OrgMember;
+import com.tarakki.organization.exceptionhandling.OrgMemberNotFoundException;
 import com.tarakki.organization.exceptionhandling.OrganizationNotFoundException;
 import com.tarakki.organization.repository.OrgMemberRepository;
 import com.tarakki.organization.repository.OrganizationRepository;
@@ -58,6 +60,28 @@ public class OrgMemberServiceImpl implements OrgMemberService {
         return orgMembers.stream()
                 .map(orgMember -> modelMapper.map(orgMember, OrgMemberDTO.class))
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public OrgMemberDTO updateOrgMember(Long orgMemberId, Long orgId, OrgMemberUpdateRequest updateRequest) {
+        organizationRepository.findById(orgId)
+                .orElseThrow(() -> new OrganizationNotFoundException(orgId));
+
+        OrgMember orgMember = orgMemberRepository.findByOrgMemberIdAndOrgId(orgMemberId, orgId)
+                .orElseThrow(() -> new OrgMemberNotFoundException(orgMemberId, orgId));
+
+        if (updateRequest.getMemberAccountStatus() != null) {
+            orgMember.setMemberAccountStatus(updateRequest.getMemberAccountStatus());
+        }
+
+        if (updateRequest.getOrgMemberRole() != null) {
+            orgMember.setOrgMemberRole(updateRequest.getOrgMemberRole());
+        }
+
+        OrgMember updatedOrgMember = orgMemberRepository.save(orgMember);
+
+        return modelMapper.map(updatedOrgMember, OrgMemberDTO.class);
     }
 
     @Override
