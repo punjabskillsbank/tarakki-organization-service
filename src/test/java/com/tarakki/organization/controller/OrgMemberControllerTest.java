@@ -32,6 +32,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 
 @WebMvcTest(OrgMemberController.class)
 @Import(GlobalExceptionHandler.class)
@@ -62,7 +63,7 @@ public class OrgMemberControllerTest {
         when(orgMemberService.addMemberToOrg(any(OrgMemberDTO.class), eq(orgId)))
                 .thenReturn(dto);
 
-        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId)
+        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId).with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated())
@@ -79,7 +80,7 @@ public class OrgMemberControllerTest {
         when(orgMemberService.addMemberToOrg(any(OrgMemberDTO.class), eq(orgId)))
                 .thenThrow(new OrganizationNotFoundException(orgId));
 
-        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId)
+        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId).with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isNotFound())
@@ -92,7 +93,7 @@ public class OrgMemberControllerTest {
 
         dto.setEmail(null);
 
-        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId)
+        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId).with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
@@ -103,7 +104,7 @@ public class OrgMemberControllerTest {
 
         dto.setOrgId(null);
 
-        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId)
+        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId).with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
@@ -114,7 +115,7 @@ public class OrgMemberControllerTest {
 
         dto.setMemberAccountStatus(null);
 
-        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId)
+        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId).with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
@@ -126,7 +127,7 @@ public class OrgMemberControllerTest {
         ObjectNode body = objectMapper.valueToTree(dto);
         body.remove("memberAccountStatus");
 
-        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId)
+        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId).with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isBadRequest())
@@ -139,7 +140,7 @@ public class OrgMemberControllerTest {
 
         dto.setOrgMemberRole(null);
 
-        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId)
+        mockMvc.perform(post("/api/organizations/{orgId}/members", orgId).with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
@@ -151,7 +152,7 @@ public class OrgMemberControllerTest {
         when(orgMemberService.getMembersByOrgId(orgId))
                 .thenReturn(orgMemberDtos);
 
-        mockMvc.perform(get("/api/organizations/{orgId}/members", orgId))
+        mockMvc.perform(get("/api/organizations/{orgId}/members", orgId).with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(orgMemberDtos.size()))
                 .andExpect(jsonPath("$[0].orgMemberId").value(orgMemberDtos.get(0).getOrgMemberId()))
@@ -172,7 +173,7 @@ public class OrgMemberControllerTest {
         when(orgMemberService.getMembersByOrgId(orgId))
                 .thenReturn(List.of());
 
-        mockMvc.perform(get("/api/organizations/{orgId}/members", orgId))
+        mockMvc.perform(get("/api/organizations/{orgId}/members", orgId).with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
     }
@@ -183,7 +184,7 @@ public class OrgMemberControllerTest {
         when(orgMemberService.getMembersByOrgId(orgId))
                 .thenThrow(new OrganizationNotFoundException(orgId));
 
-        mockMvc.perform(get("/api/organizations/{orgId}/members", orgId))
+        mockMvc.perform(get("/api/organizations/{orgId}/members", orgId).with(jwt()))
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string(
                         "Organization with ID " + orgId + " not found"));
@@ -259,7 +260,7 @@ public class OrgMemberControllerTest {
         System.out.println("sjs"+orgMemberId+orgId);
         orgMemberService.deleteOrgMember(orgMemberId,orgId);
 
-        mockMvc.perform(delete("/api/organizations/{orgId}/members/{orgMemberId}",orgId,orgMemberId))
+        mockMvc.perform(delete("/api/organizations/{orgId}/members/{orgMemberId}",orgId,orgMemberId).with(jwt()))
                 .andExpect(status().isNoContent());
     }
 }

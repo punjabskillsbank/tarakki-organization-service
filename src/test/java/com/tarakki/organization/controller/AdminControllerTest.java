@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 
 @WebMvcTest(controllers = AdminController.class)
 public class AdminControllerTest {
@@ -42,7 +43,8 @@ public class AdminControllerTest {
         when(adminOrganizationService.getAllOrganizations()).thenReturn(List.of(output));
 
         mockMvc.perform(get("/api/admin/organizations/")
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].orgId").value(output.getOrgId()))
                 .andExpect(jsonPath("$[0].orgName").value(output.getOrgName()))
