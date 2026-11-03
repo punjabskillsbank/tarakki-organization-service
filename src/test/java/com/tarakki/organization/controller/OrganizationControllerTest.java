@@ -25,6 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 
 @WebMvcTest(OrganizationController.class)
 public class OrganizationControllerTest {
@@ -59,7 +60,7 @@ public class OrganizationControllerTest {
         when(organizationService.createOrganization(any()))
                 .thenReturn(output);
 
-        mockMvc.perform(post("/api/organizations")
+        mockMvc.perform(post("/api/organizations").with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isCreated())
@@ -79,7 +80,7 @@ public class OrganizationControllerTest {
         when(organizationService.createOrganization(any()))
                 .thenThrow(new OwnerIdNotFoundException(input.getOwnerId()));
 
-        mockMvc.perform(post("/api/organizations")
+        mockMvc.perform(post("/api/organizations").with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isNotFound())
@@ -93,7 +94,7 @@ public class OrganizationControllerTest {
 
         input.setOrgName(null);
 
-        mockMvc.perform(post("/api/organizations")
+        mockMvc.perform(post("/api/organizations").with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest())
@@ -106,7 +107,7 @@ public class OrganizationControllerTest {
 
         input.setOwnerId(null);
 
-        mockMvc.perform(post("/api/organizations")
+        mockMvc.perform(post("/api/organizations").with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest());
@@ -117,7 +118,7 @@ public class OrganizationControllerTest {
 
         input.setOrgDesc(null);
 
-        mockMvc.perform(post("/api/organizations")
+        mockMvc.perform(post("/api/organizations").with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest());
@@ -128,7 +129,7 @@ public class OrganizationControllerTest {
 
         input.setOrgAddress(null);
 
-        mockMvc.perform(post("/api/organizations")
+        mockMvc.perform(post("/api/organizations").with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest());
@@ -139,7 +140,7 @@ public class OrganizationControllerTest {
 
         input.setOrgCity(null);
 
-        mockMvc.perform(post("/api/organizations")
+        mockMvc.perform(post("/api/organizations").with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest());
@@ -150,7 +151,7 @@ public class OrganizationControllerTest {
 
         input.setOrgState(null);
 
-        mockMvc.perform(post("/api/organizations")
+        mockMvc.perform(post("/api/organizations").with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest());
@@ -161,7 +162,7 @@ public class OrganizationControllerTest {
 
         input.setOrgPostalCode(null);
 
-        mockMvc.perform(post("/api/organizations")
+        mockMvc.perform(post("/api/organizations").with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest());
@@ -172,7 +173,7 @@ public class OrganizationControllerTest {
 
         input.setOrgCountry(null);
 
-        mockMvc.perform(post("/api/organizations")
+        mockMvc.perform(post("/api/organizations").with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest());
@@ -183,7 +184,8 @@ public class OrganizationControllerTest {
         when(organizationService.getOrganizationById(orgId, ownerId)).thenReturn(output);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/organizations/{organizationId}", orgId)
-                        .param("memberId", ownerId.toString()))
+                        .param("memberId", ownerId.toString())
+                        .with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.orgId").value(output.getOrgId()))
                 .andExpect(jsonPath("$.orgName").value(output.getOrgName()));
@@ -195,7 +197,8 @@ public class OrganizationControllerTest {
                 .thenThrow(new com.tarakki.organization.exceptionhandling.OrganizationNotFoundException(orgId));
 
         mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/organizations/{organizationId}", orgId)
-                        .param("memberId", ownerId.toString()))
+                        .param("memberId", ownerId.toString())
+                        .with(jwt()))
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string("Organization with ID " + orgId + " not found"));
     }
@@ -206,7 +209,8 @@ public class OrganizationControllerTest {
                 .thenThrow(new com.tarakki.organization.exceptionhandling.MemberNotInOrganizationException(ownerId, orgId));
 
         mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/organizations/{organizationId}", orgId)
-                        .param("memberId", ownerId.toString()))
+                        .param("memberId", ownerId.toString())
+                        .with(jwt()))
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string("Member " + ownerId + " does not belong to organization " + orgId));
     }
@@ -215,7 +219,7 @@ public class OrganizationControllerTest {
     void shouldUpdateOrganization() throws Exception {
         when(organizationService.updateOrganization(eq(orgId), any())).thenReturn(output);
 
-        mockMvc.perform(patch("/api/organizations/{organizationId}", orgId)
+        mockMvc.perform(patch("/api/organizations/{organizationId}", orgId).with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isOk())
@@ -229,7 +233,7 @@ public class OrganizationControllerTest {
         when(organizationService.updateOrganization(eq(orgId), any()))
                 .thenThrow(new com.tarakki.organization.exceptionhandling.OrganizationNotFoundException(orgId));
 
-        mockMvc.perform(patch("/api/organizations/{organizationId}", orgId)
+        mockMvc.perform(patch("/api/organizations/{organizationId}", orgId).with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isNotFound())
@@ -240,7 +244,7 @@ public class OrganizationControllerTest {
     void shouldReturnBadRequestWhenUpdatingWithInvalidPostalCode() throws Exception {
         input.setOrgPostalCode("abc");
 
-        mockMvc.perform(patch("/api/organizations/{organizationId}", orgId)
+        mockMvc.perform(patch("/api/organizations/{organizationId}", orgId).with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest())
@@ -251,7 +255,7 @@ public class OrganizationControllerTest {
     void shouldReturnBadRequestWhenUpdatingWithCityExceedingColumnLength() throws Exception {
         input.setOrgCity("a".repeat(101));
 
-        mockMvc.perform(patch("/api/organizations/{organizationId}", orgId)
+        mockMvc.perform(patch("/api/organizations/{organizationId}", orgId).with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest())
@@ -260,7 +264,7 @@ public class OrganizationControllerTest {
 
     @Test
     void shouldReturnBadRequestWhenUpdatingWithEmptyRequestBody() throws Exception {
-        mockMvc.perform(patch("/api/organizations/{organizationId}", orgId)
+        mockMvc.perform(patch("/api/organizations/{organizationId}", orgId).with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isBadRequest())
@@ -271,7 +275,8 @@ public class OrganizationControllerTest {
     void shouldReturnTrueWhenMemberExistsInOrganization() throws Exception {
         when(organizationService.existsMemberInOrganization(orgId, ownerId)).thenReturn(true);
 
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/organizations/{organizationId}/members/{memberId}/exists", orgId, ownerId))
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/organizations/{organizationId}/members/{memberId}/exists", orgId, ownerId)
+                        .with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("true"));
     }
@@ -280,7 +285,8 @@ public class OrganizationControllerTest {
     void shouldReturnFalseWhenMemberDoesNotExistInOrganization() throws Exception {
         when(organizationService.existsMemberInOrganization(orgId, ownerId)).thenReturn(false);
 
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/organizations/{organizationId}/members/{memberId}/exists", orgId, ownerId))
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/organizations/{organizationId}/members/{memberId}/exists", orgId, ownerId)
+                        .with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("false"));
     }
