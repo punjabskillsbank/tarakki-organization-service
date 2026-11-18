@@ -39,6 +39,15 @@ public class OrgMemberController {
 
     }
 
+    @GetMapping("/{orgMemberId}")
+    public ResponseEntity<OrgMemberDTO> getOrgMemberById(@PathVariable Long orgId, @PathVariable Long orgMemberId) {
+
+        OrgMemberDTO response = orgMemberService.getOrgMemberById(orgMemberId, orgId);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
+    }
+
     @Auditable(eventName = "ORG_MEMBER_UPDATED", entityName = "ORG_MEMBER", entityClass = OrgMember.class, entityIdArgSpel = "#orgMemberId")
     @PatchMapping("/{orgMemberId}")
     public ResponseEntity<OrgMemberDTO> updateOrgMember(@PathVariable Long orgMemberId, @PathVariable Long orgId,

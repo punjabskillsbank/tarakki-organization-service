@@ -191,6 +191,48 @@ public class OrgMemberControllerTest {
     }
 
     @Test
+    void shouldReturnOrgMemberById() throws Exception {
+        when(orgMemberService.getOrgMemberById(orgMemberId, orgId))
+                .thenReturn(dto);
+
+        mockMvc.perform(get("/api/organizations/{orgId}/members/{orgMemberId}", orgId, orgMemberId).with(jwt()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.orgId").value(dto.getOrgId()))
+                .andExpect(jsonPath("$.memberId").value(dto.getMemberId().toString()))
+                .andExpect(jsonPath("$.email").value(dto.getEmail()))
+                .andExpect(jsonPath("$.memberAccountStatus").value(dto.getMemberAccountStatus().toString()))
+                .andExpect(jsonPath("$.orgMemberRole").value(dto.getOrgMemberRole().toString()));
+
+        verify(orgMemberService).getOrgMemberById(orgMemberId, orgId);
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenOrgIdIsNotFoundOnGetOrgMember() throws Exception {
+        when(orgMemberService.getOrgMemberById(orgMemberId, orgId))
+                .thenThrow(new OrganizationNotFoundException(orgId));
+
+        mockMvc.perform(get("/api/organizations/{orgId}/members/{orgMemberId}", orgId, orgMemberId).with(jwt()))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().string(
+                        "Organization with ID " + orgId + " not found"));
+
+        verify(orgMemberService).getOrgMemberById(orgMemberId, orgId);
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenOrgMemberIsNotFoundOnGetOrgMember() throws Exception {
+        when(orgMemberService.getOrgMemberById(orgMemberId, orgId))
+                .thenThrow(new OrgMemberNotFoundException(orgMemberId, orgId));
+
+        mockMvc.perform(get("/api/organizations/{orgId}/members/{orgMemberId}", orgId, orgMemberId).with(jwt()))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().string(
+                        "Org member with ID " + orgMemberId + " not found in organization " + orgId));
+
+        verify(orgMemberService).getOrgMemberById(orgMemberId, orgId);
+    }
+
+    @Test
     void shouldUpdateOrgMember() throws Exception {
         OrgMemberUpdateRequest updateRequest = OrgMemberTestDataFactory.createOrgMemberUpdateRequest();
 

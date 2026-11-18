@@ -63,6 +63,21 @@ public class OrgMemberServiceImpl implements OrgMemberService {
     }
 
     @Override
+    public OrgMemberDTO getOrgMemberById(Long orgMemberId, Long orgId) {
+        organizationRepository.findById(orgId)
+                .orElseThrow(() -> new OrganizationNotFoundException(orgId));
+
+        OrgMember orgMember = orgMemberRepository.findByOrgMemberIdAndOrgId(orgMemberId, orgId)
+                .orElseThrow(() -> new OrgMemberNotFoundException(orgMemberId, orgId));
+
+        MemberDTO member = memberClient.getMemberById(orgMember.getMemberId());
+
+        return modelMapper.map(orgMember, OrgMemberDTO.class).toBuilder()
+                .email(member.getEmail())
+                .build();
+    }
+
+    @Override
     @Transactional
     public OrgMemberDTO updateOrgMember(Long orgMemberId, Long orgId, OrgMemberUpdateRequest updateRequest) {
         organizationRepository.findById(orgId)
