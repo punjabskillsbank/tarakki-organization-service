@@ -11,6 +11,8 @@ public interface OrgMemberService {
 
     List<OrgMemberDTO> getMembersByOrgId(Long orgId);
 
+    OrgMemberDTO getOrgMemberById(Long orgMemberId, Long orgId);
+
     OrgMemberDTO updateOrgMember(Long orgMemberId, Long orgId, OrgMemberUpdateRequest updateRequest);
 
     void deleteOrgMember(Long orgMemberId, Long OrgId);
